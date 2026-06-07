@@ -1,0 +1,19 @@
+.select {
+  width: 122px;
+  height: 34px;
+  border: 1px solid rgba(231, 204, 142, 0.28);
+  border-radius: var(--radius-sm);
+  background: rgba(16, 11, 24, 0.86);
+  color: var(--color-text);
+  font-size: 0.82rem;
+}
+
+.select:focus-visible {
+  outline: 2px solid rgba(231, 204, 142, 0.72);
+  outline-offset: 2px;
+}
+
+.select:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
