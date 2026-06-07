@@ -10,6 +10,9 @@ import { useMemo, useRef } from "react";
 import type { CasesResponse } from "../../../api/apiTypes";
 import { buildCaseColumns } from "../tableColumns";
 import type { CaseStatus, OperationalCase } from "../types";
+import { EmptyState } from "./EmptyState";
+import { ErrorState } from "./ErrorState";
+import { TableSkeleton } from "./TableSkeleton";
 import styles from "./CasesTable.module.css";
 
 interface CasesTableProps {
@@ -26,6 +29,7 @@ interface CasesTableProps {
   onStatusChange: (id: string, status: CaseStatus) => void;
   onPageChange: (page: number) => void;
   onViewCase: (selectedCase: OperationalCase) => void;
+  onRetry: () => void;
 }
 
 function getShowingText(data: CasesResponse | undefined): string {
@@ -53,6 +57,7 @@ export function CasesTable({
   onStatusChange,
   onPageChange,
   onViewCase,
+  onRetry,
 }: CasesTableProps) {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const items = useMemo(() => data?.items ?? [], [data?.items]);
@@ -150,11 +155,9 @@ export function CasesTable({
             ))}
           </div>
 
-          {isLoading ? <div className={styles.empty}>Loading records...</div> : null}
-          {isError ? <div className={styles.error}>The service could not retrieve this page.</div> : null}
-          {!isLoading && !isError && rows.length === 0 ? (
-            <div className={styles.empty}>No cases match the current filters.</div>
-          ) : null}
+          {isLoading ? <TableSkeleton /> : null}
+          {isError ? <ErrorState onRetry={onRetry} /> : null}
+          {!isLoading && !isError && rows.length === 0 ? <EmptyState /> : null}
 
           {!isLoading && !isError && rows.length > 0 ? (
             <div

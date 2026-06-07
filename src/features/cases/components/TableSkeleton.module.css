@@ -1,0 +1,49 @@
+.skeleton {
+  display: grid;
+  gap: 1px;
+  padding: 1px 0 0;
+  background: rgba(231, 204, 142, 0.08);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 48px 1.1fr 1.25fr 0.8fr 0.8fr 0.8fr 0.7fr 1fr 0.55fr 0.85fr 0.55fr;
+  gap: 0;
+  min-width: 1320px;
+  height: 52px;
+  background: rgba(11, 19, 28, 0.72);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-right: 1px solid rgba(231, 204, 142, 0.08);
+}
+
+.bar {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(246, 236, 208, 0.08);
+}
+
+.bar::after {
+  display: block;
+  width: 40%;
+  height: 100%;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(231, 204, 142, 0.18), transparent);
+  animation: shimmer 1.25s infinite;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
