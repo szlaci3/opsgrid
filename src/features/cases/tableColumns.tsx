@@ -13,6 +13,7 @@ interface BuildCaseColumnsOptions {
   areAllVisibleSelected: boolean;
   areSomeVisibleSelected: boolean;
   onStatusChange: (id: string, status: CaseStatus) => void;
+  onViewCase: (selectedCase: OperationalCase) => void;
 }
 
 function formatDate(value: string): string {
@@ -35,6 +36,7 @@ export function buildCaseColumns({
   areAllVisibleSelected,
   areSomeVisibleSelected,
   onStatusChange,
+  onViewCase,
 }: BuildCaseColumnsOptions): ColumnDef<OperationalCase>[] {
   return [
     {
@@ -136,8 +138,15 @@ export function buildCaseColumns({
     {
       id: "actions",
       header: "Actions",
-      cell: () => (
-        <button aria-label="View case actions" type="button">
+      cell: ({ row }) => (
+        <button
+          aria-label={`View details for ${row.original.id}`}
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onViewCase(row.original);
+          }}
+        >
           <MoreVertical aria-hidden="true" size={18} />
         </button>
       ),

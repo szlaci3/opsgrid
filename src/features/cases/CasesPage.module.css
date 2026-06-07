@@ -79,3 +79,9 @@
   color: #bbf7d0;
   font-weight: 800;
 }
+
+.notice[data-kind="error"] {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca;
+}

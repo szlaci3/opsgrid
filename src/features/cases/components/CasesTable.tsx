@@ -25,6 +25,7 @@ interface CasesTableProps {
   onToggleAllVisible: () => void;
   onStatusChange: (id: string, status: CaseStatus) => void;
   onPageChange: (page: number) => void;
+  onViewCase: (selectedCase: OperationalCase) => void;
 }
 
 function getShowingText(data: CasesResponse | undefined): string {
@@ -51,6 +52,7 @@ export function CasesTable({
   onToggleAllVisible,
   onStatusChange,
   onPageChange,
+  onViewCase,
 }: CasesTableProps) {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const items = useMemo(() => data?.items ?? [], [data?.items]);
@@ -69,11 +71,13 @@ export function CasesTable({
         onToggleRow,
         onToggleAllVisible,
         onStatusChange,
+        onViewCase,
       }),
     [
       areAllVisibleSelected,
       areSomeVisibleSelected,
       onStatusChange,
+      onViewCase,
       onToggleAllVisible,
       onToggleRow,
       pendingStatusIds,
@@ -106,7 +110,13 @@ export function CasesTable({
         <span>
           <span className={styles.selected}>{selectedIds.size}</span> selected
         </span>
-        <span>{isFetching ? <span className={styles.fetching}>Refreshing cached records...</span> : "Cached pages enabled by TanStack Query"}</span>
+        <span>
+          {isFetching ? (
+            <span className={styles.fetching}>Refreshing cached records...</span>
+          ) : (
+            "Cached pages enabled by TanStack Query"
+          )}
+        </span>
       </div>
 
       <div className={styles.scroll} ref={parentRef}>
@@ -128,8 +138,8 @@ export function CasesTable({
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === "asc" ? " ↑" : null}
-                        {header.column.getIsSorted() === "desc" ? " ↓" : null}
+                        {header.column.getIsSorted() === "asc" ? " asc" : null}
+                        {header.column.getIsSorted() === "desc" ? " desc" : null}
                       </button>
                     ) : (
                       flexRender(header.column.columnDef.header, header.getContext())
@@ -160,7 +170,18 @@ export function CasesTable({
                     className={styles.row}
                     key={row.id}
                     role="row"
-                    style={{ height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
+                    tabIndex={0}
+                    onClick={() => onViewCase(row.original)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onViewCase(row.original);
+                      }
+                    }}
+                    style={{
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <div

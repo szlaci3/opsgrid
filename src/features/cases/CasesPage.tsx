@@ -1,12 +1,18 @@
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { resetDemoData, updateDemoConfig } from "../../api/casesApi";
 import type { CasesQueryParams } from "../../api/apiTypes";
+import { queryClient } from "../../app/queryClient";
+import { ArchitectureFooter } from "./components/ArchitectureFooter";
+import { BulkActionBar } from "./components/BulkActionBar";
+import { CaseDetailDrawer } from "./components/CaseDetailDrawer";
 import { CasesTable } from "./components/CasesTable";
 import { CasesToolbar } from "./components/CasesToolbar";
-import { usePatchCaseMutation } from "./hooks/useCaseMutations";
+import { DemoControls } from "./components/DemoControls";
+import { useBulkReviewMutation, usePatchCaseMutation } from "./hooks/useCaseMutations";
 import { useCasesQuery } from "./hooks/useCasesQuery";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
-import type { CaseStatus } from "./types";
+import type { CaseStatus, OperationalCase } from "./types";
 import styles from "./CasesPage.module.css";
 
 const summaryItems = [
@@ -36,7 +42,10 @@ export function CasesPage() {
   const [searchInput, setSearchInput] = useState(initialParams.search);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pendingStatusIds, setPendingStatusIds] = useState<Set<string>>(new Set());
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ message: string; kind: "success" | "error" } | null>(null);
+  const [selectedCase, setSelectedCase] = useState<OperationalCase | null>(null);
+  const [latencyMs, setLatencyMs] = useState(500);
+  const [isDemoBusy, setIsDemoBusy] = useState(false);
   const debouncedSearch = useDebouncedValue(searchInput, 350);
   const queryParams = useMemo(
     () => ({ ...params, search: debouncedSearch }),
@@ -45,11 +54,19 @@ export function CasesPage() {
 
   const casesQuery = useCasesQuery(queryParams);
   const patchCaseMutation = usePatchCaseMutation();
+  const bulkReviewMutation = useBulkReviewMutation();
 
   const sorting = useMemo<SortingState>(
     () => [{ id: params.sortBy, desc: params.sortDirection === "desc" }],
     [params.sortBy, params.sortDirection],
   );
+  const drawerCase = useMemo(() => {
+    if (!selectedCase) {
+      return null;
+    }
+
+    return casesQuery.data?.items.find((item) => item.id === selectedCase.id) ?? selectedCase;
+  }, [casesQuery.data?.items, selectedCase]);
 
   useEffect(() => {
     if (!notice) {
@@ -141,8 +158,9 @@ export function CasesPage() {
       patchCaseMutation.mutate(
         { id, patch: { status } },
         {
-          onSuccess: () => setNotice("Case status updated."),
-          onError: () => setNotice("Update failed. Previous status restored."),
+          onSuccess: () => setNotice({ message: "Case status updated.", kind: "success" }),
+          onError: () =>
+            setNotice({ message: "Update failed. Previous status restored.", kind: "error" }),
           onSettled: () => {
             setPendingStatusIds((current) => {
               const next = new Set(current);
@@ -155,6 +173,81 @@ export function CasesPage() {
     },
     [patchCaseMutation],
   );
+
+  const handleBulkReview = useCallback(() => {
+    const ids = Array.from(selectedIds);
+
+    if (ids.length === 0) {
+      return;
+    }
+
+    bulkReviewMutation.mutate(
+      { ids },
+      {
+        onSuccess: () => {
+          setSelectedIds(new Set());
+          setNotice({ message: "Selected cases marked as reviewed.", kind: "success" });
+        },
+        onError: () =>
+          setNotice({
+            message: "The selected cases could not be reviewed. Previous values restored.",
+            kind: "error",
+          }),
+      },
+    );
+  }, [bulkReviewMutation, selectedIds]);
+
+  const runDemoAction = useCallback(async (action: () => Promise<void>) => {
+    setIsDemoBusy(true);
+
+    try {
+      await action();
+    } finally {
+      setIsDemoBusy(false);
+    }
+  }, []);
+
+  const handleLatencyChange = useCallback(
+    (nextLatencyMs: number) => {
+      void runDemoAction(async () => {
+        await updateDemoConfig({ latencyMs: nextLatencyMs });
+        setLatencyMs(nextLatencyMs);
+        setNotice({ message: "Latency updated.", kind: "success" });
+      });
+    },
+    [runDemoAction],
+  );
+
+  const handleFailNextFetch = useCallback(() => {
+    void runDemoAction(async () => {
+      await updateDemoConfig({ failNextFetch: true });
+      setNotice({ message: "Next fetch will fail.", kind: "error" });
+      await queryClient.invalidateQueries({ queryKey: ["cases"] });
+    });
+  }, [runDemoAction]);
+
+  const handleFailNextUpdate = useCallback(() => {
+    void runDemoAction(async () => {
+      await updateDemoConfig({ failNextMutation: true });
+      setNotice({ message: "Next update will fail.", kind: "error" });
+    });
+  }, [runDemoAction]);
+
+  const handleClearCache = useCallback(() => {
+    queryClient.clear();
+    setNotice({ message: "Cache cleared.", kind: "success" });
+    void casesQuery.refetch();
+  }, [casesQuery]);
+
+  const handleResetData = useCallback(() => {
+    void runDemoAction(async () => {
+      await resetDemoData();
+      setSelectedIds(new Set());
+      setSelectedCase(null);
+      setNotice({ message: "Data reset.", kind: "success" });
+      await queryClient.invalidateQueries({ queryKey: ["cases"] });
+    });
+  }, [runDemoAction]);
 
   return (
     <main className={styles.page}>
@@ -176,6 +269,16 @@ export function CasesPage() {
         ))}
       </section>
 
+      <DemoControls
+        isBusy={isDemoBusy}
+        latencyMs={latencyMs}
+        onClearCache={handleClearCache}
+        onFailNextFetch={handleFailNextFetch}
+        onFailNextUpdate={handleFailNextUpdate}
+        onLatencyChange={handleLatencyChange}
+        onResetData={handleResetData}
+      />
+
       <CasesToolbar
         params={params}
         searchInput={searchInput}
@@ -185,10 +288,22 @@ export function CasesPage() {
       />
 
       {notice ? (
-        <button className={styles.notice} type="button" onClick={() => setNotice(null)}>
-          {notice}
+        <button
+          className={styles.notice}
+          data-kind={notice.kind}
+          type="button"
+          onClick={() => setNotice(null)}
+        >
+          {notice.message}
         </button>
       ) : null}
+
+      <BulkActionBar
+        isReviewing={bulkReviewMutation.isPending}
+        selectedCount={selectedIds.size}
+        onClearSelection={() => setSelectedIds(new Set())}
+        onReviewSelected={handleBulkReview}
+      />
 
       <CasesTable
         data={casesQuery.data}
@@ -203,7 +318,12 @@ export function CasesPage() {
         onStatusChange={handleStatusChange}
         onToggleAllVisible={handleToggleAllVisible}
         onToggleRow={handleToggleRow}
+        onViewCase={setSelectedCase}
       />
+
+      <CaseDetailDrawer selectedCase={drawerCase} onClose={() => setSelectedCase(null)} />
+
+      <ArchitectureFooter />
     </main>
   );
 }
