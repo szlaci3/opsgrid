@@ -1,14 +1,13 @@
-.footerSlot {
-  position: relative;
+.footerPlaceholder {
   height: 60px;
   margin: 0 17vw 0 100px;
 }
 
 .footer {
   position: absolute;
-  right: 0;
   bottom: 0;
-  left: 0;
+  left: 100px;
+  right: clamp(140px, 16vw, 280px);
   z-index: 5;
   min-height: 60px;
   overflow: hidden;
@@ -48,7 +47,12 @@
 }
 
 @media (max-width: 900px) {
-  .footerSlot {
+  .footerPlaceholder {
     margin: 0;
+  }
+
+  .footer {
+    right: 0;
+    left: 0;
   }
 }

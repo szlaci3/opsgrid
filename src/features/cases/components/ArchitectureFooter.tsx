@@ -3,32 +3,19 @@ import styles from "./ArchitectureFooter.module.css";
 
 export function ArchitectureFooter() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedHeight, setExpandedHeight] = useState(60);
   const footerRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const measureFooter = () => {
-      if (footerRef.current) {
-        setExpandedHeight(Math.max(60, footerRef.current.scrollHeight));
-      }
-    };
-
-    measureFooter();
-    window.addEventListener("resize", measureFooter);
-    return () => window.removeEventListener("resize", measureFooter);
-  }, []);
 
   const toggleExpanded = () => setIsExpanded((current) => !current);
 
   return (
-    <div className={styles.footerSlot}>
+    <>
+      <div className={styles.footerPlaceholder} aria-hidden="true" />
       <footer
         aria-expanded={isExpanded}
         className={styles.footer}
         data-expanded={isExpanded}
         ref={footerRef}
         role="button"
-        style={{ maxHeight: isExpanded ? `${expandedHeight}px` : "60px" }}
         tabIndex={0}
         onClick={toggleExpanded}
         onKeyDown={(event) => {
@@ -47,6 +34,6 @@ export function ArchitectureFooter() {
           behaves like a client-server application without requiring a real backend.
         </p>
       </footer>
-    </div>
+    </>
   );
 }
