@@ -289,16 +289,17 @@ export function CasesPage() {
         onSearchInputChange={handleSearchInputChange}
       />
 
-      {notice ? (
-        <button
-          className={styles.notice}
-          data-kind={notice.kind}
-          type="button"
-          onClick={() => setNotice(null)}
-        >
-          {notice.message}
-        </button>
-      ) : null}
+      <button
+        aria-hidden={!notice}
+        className={styles.notice}
+        data-kind={notice?.kind ?? "success"}
+        data-visible={Boolean(notice)}
+        tabIndex={notice ? 0 : -1}
+        type="button"
+        onClick={() => setNotice(null)}
+      >
+        {notice?.message}
+      </button>
 
       <BulkActionBar
         isReviewing={bulkReviewMutation.isPending}

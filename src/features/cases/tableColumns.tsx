@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreVertical } from "lucide-react";
+import { Eye } from "lucide-react";
 import { CaseRiskBadge } from "./components/CaseRiskBadge";
 import { CaseStatusSelect } from "./components/CaseStatusSelect";
 import { formatStatusLabel } from "./filterOptions";
@@ -147,7 +147,7 @@ export function buildCaseColumns({
             onViewCase(row.original);
           }}
         >
-          <MoreVertical aria-hidden="true" size={18} />
+          <Eye aria-hidden="true" size={18} />
         </button>
       ),
       size: 86,

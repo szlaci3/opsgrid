@@ -2,7 +2,7 @@
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(16, 11, 24, 0.78);
+  background: rgba(16, 11, 24, 0.33);
   box-shadow: var(--shadow-panel);
 }
 
@@ -100,7 +100,7 @@
   left: 0;
   display: flex;
   width: 100%;
-  background: rgba(11, 19, 28, 0.54);
+  /* background: rgba(11, 19, 28, 0.54); */
   cursor: pointer;
 }
 
