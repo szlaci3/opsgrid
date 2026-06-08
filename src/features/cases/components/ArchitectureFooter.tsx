@@ -1,16 +1,52 @@
+import { useEffect, useRef, useState } from "react";
 import styles from "./ArchitectureFooter.module.css";
 
 export function ArchitectureFooter() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedHeight, setExpandedHeight] = useState(60);
+  const footerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const measureFooter = () => {
+      if (footerRef.current) {
+        setExpandedHeight(Math.max(60, footerRef.current.scrollHeight));
+      }
+    };
+
+    measureFooter();
+    window.addEventListener("resize", measureFooter);
+    return () => window.removeEventListener("resize", measureFooter);
+  }, []);
+
+  const toggleExpanded = () => setIsExpanded((current) => !current);
+
   return (
-    <footer className={styles.footer}>
-      <p>
-        Built with React, TypeScript, TanStack Table, TanStack Virtual, TanStack Query,
-        and Mock Service Worker. This demo uses a generated local dataset behind an
-        API-like mock layer to demonstrate server-style filtering, pagination, sorting,
-        request cancellation, cached pages, optimistic updates, and rollback. The
-        deployed version uses Mock Service Worker as a fake API layer, so the interface
-        behaves like a client-server application without requiring a real backend.
-      </p>
-    </footer>
+    <div className={styles.footerSlot}>
+      <footer
+        aria-expanded={isExpanded}
+        className={styles.footer}
+        data-expanded={isExpanded}
+        ref={footerRef}
+        role="button"
+        style={{ maxHeight: isExpanded ? `${expandedHeight}px` : "60px" }}
+        tabIndex={0}
+        onClick={toggleExpanded}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleExpanded();
+          }
+        }}
+      >
+        <p>
+          Built with React, TypeScript, TanStack Table, TanStack Virtual, TanStack Query,
+          and Mock Service Worker. This demo uses a generated local dataset behind an
+          API-like mock layer to demonstrate server-style filtering, pagination, sorting,
+          request cancellation, cached pages, optimistic updates, and rollback. The
+          deployed version uses Mock Service Worker as a fake API layer, so the interface
+          behaves like a client-server application without requiring a real backend.
+        </p>
+      </footer>
+    </div>
   );
 }

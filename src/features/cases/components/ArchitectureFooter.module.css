@@ -1,12 +1,54 @@
+.footerSlot {
+  position: relative;
+  height: 60px;
+  margin: 0 17vw 0 100px;
+}
+
 .footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  min-height: 60px;
+  overflow: hidden;
   padding: 18px 20px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: rgba(16, 11, 24, 0.68);
   color: var(--color-text-muted);
+  cursor: pointer;
   line-height: 1.55;
+  transition:
+    max-height 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .footer p {
+  overflow: hidden;
   margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer[data-expanded="true"] {
+  background: rgba(16, 11, 24, 0.92);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-panel);
+}
+
+.footer[data-expanded="true"] p {
+  white-space: normal;
+}
+
+.footer:focus-visible {
+  outline: 2px solid rgba(231, 204, 142, 0.72);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .footerSlot {
+    margin: 0;
+  }
 }
