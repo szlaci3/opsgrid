@@ -1,6 +1,8 @@
 .page {
   display: grid;
   gap: 18px;
+  position: relative;
+  z-index: 1;
 }
 
 .topGrid {

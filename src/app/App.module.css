@@ -4,6 +4,37 @@
   padding: 24px 0 40px;
 }
 
+.decorLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* TODO: width: min(1560px, calc(100% - 32px));*/
+  width: min(1800px, calc(100% - 32px));
+  margin: auto;
+}
+
+.topLeft {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(80px, 9vw, 150px);
+}
+
+.bottomLeft {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: clamp(70px, 12vh, 120px);
+}
+
+.bottomRight {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: clamp(140px, 16vw, 280px);
+}
+
 @media (max-width: 720px) {
   .shell {
     width: min(100% - 20px, 1440px);
