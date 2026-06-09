@@ -20,6 +20,7 @@ interface CasesTableProps {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  isReviewing: boolean;
   selectedIds: Set<string>;
   pendingStatusIds: Set<string>;
   sorting: SortingState;
@@ -30,6 +31,8 @@ interface CasesTableProps {
   onPageChange: (page: number) => void;
   onViewCase: (selectedCase: OperationalCase) => void;
   onRetry: () => void;
+  onClearSelection: () => void;
+  onReviewSelected: () => void;
 }
 
 function getShowingText(data: CasesResponse | undefined): string {
@@ -48,6 +51,7 @@ export function CasesTable({
   isLoading,
   isError,
   isFetching,
+  isReviewing,
   selectedIds,
   pendingStatusIds,
   sorting,
@@ -58,6 +62,8 @@ export function CasesTable({
   onPageChange,
   onViewCase,
   onRetry,
+  onClearSelection,
+  onReviewSelected,
 }: CasesTableProps) {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const items = useMemo(() => data?.items ?? [], [data?.items]);
@@ -112,9 +118,29 @@ export function CasesTable({
   return (
     <section className={styles.panel} aria-label="Operational compliance cases">
       <div className={styles.statusBar}>
-        <span>
-          <span className={styles.selected}>{selectedIds.size}</span> selected
-        </span>
+        <div className={styles.statusCluster}>
+          <span>
+            <span className={styles.selected}>{selectedIds.size}</span> selected
+          </span>
+          <div className={styles.bulkActions} data-visible={selectedIds.size > 0}>
+            <button
+              className={styles.bulkButton}
+              disabled={isReviewing}
+              type="button"
+              onClick={onReviewSelected}
+            >
+              Mark reviewed
+            </button>
+            <button
+              className={styles.bulkButton}
+              disabled={isReviewing}
+              type="button"
+              onClick={onClearSelection}
+            >
+              Clear selection
+            </button>
+          </div>
+        </div>
         <span>
           {isFetching ? (
             <span className={styles.fetching}>Refreshing cached records...</span>

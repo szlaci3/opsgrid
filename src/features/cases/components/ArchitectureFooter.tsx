@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./ArchitectureFooter.module.css";
 
 export function ArchitectureFooter() {

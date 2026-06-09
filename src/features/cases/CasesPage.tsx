@@ -4,7 +4,6 @@ import { resetDemoData, updateDemoConfig } from "../../api/casesApi";
 import type { CasesQueryParams } from "../../api/apiTypes";
 import { queryClient } from "../../app/queryClient";
 import { ArchitectureFooter } from "./components/ArchitectureFooter";
-import { BulkActionBar } from "./components/BulkActionBar";
 import { CaseDetailDrawer } from "./components/CaseDetailDrawer";
 import { CasesTable } from "./components/CasesTable";
 import { CasesToolbar } from "./components/CasesToolbar";
@@ -301,23 +300,19 @@ export function CasesPage() {
         {notice?.message}
       </button>
 
-      <BulkActionBar
-        isReviewing={bulkReviewMutation.isPending}
-        selectedCount={selectedIds.size}
-        onClearSelection={() => setSelectedIds(new Set())}
-        onReviewSelected={handleBulkReview}
-      />
-
       <CasesTable
         data={casesQuery.data}
         isError={casesQuery.isError}
         isFetching={casesQuery.isFetching}
         isLoading={casesQuery.isLoading}
+        isReviewing={bulkReviewMutation.isPending}
         pendingStatusIds={pendingStatusIds}
         selectedIds={selectedIds}
         sorting={sorting}
+        onClearSelection={() => setSelectedIds(new Set())}
         onPageChange={(page) => setParams((current) => ({ ...current, page }))}
         onRetry={() => void casesQuery.refetch()}
+        onReviewSelected={handleBulkReview}
         onSortingChange={handleSortingChange}
         onStatusChange={handleStatusChange}
         onToggleAllVisible={handleToggleAllVisible}
