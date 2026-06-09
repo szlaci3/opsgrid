@@ -1,11 +1,11 @@
-import { SearchX } from "lucide-react";
+import { AppIcon } from "../../../app/icons/AppIcon";
 import styles from "./EmptyState.module.css";
 
 export function EmptyState() {
   return (
     <div className={styles.state}>
       <span className={styles.icon}>
-        <SearchX aria-hidden="true" size={22} />
+        <AppIcon name="emptySearch" width={22} />
       </span>
       <h3 className={styles.title}>No cases match the current filters.</h3>
       <p className={styles.copy}>

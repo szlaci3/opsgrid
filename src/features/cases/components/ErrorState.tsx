@@ -1,11 +1,11 @@
-import { AlertTriangle } from "lucide-react";
+import { AppIcon } from "../../../app/icons/AppIcon";
 import styles from "./ErrorState.module.css";
 
 export function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className={styles.state}>
       <span className={styles.icon}>
-        <AlertTriangle aria-hidden="true" size={22} />
+        <AppIcon name="error" width={22} />
       </span>
       <h3 className={styles.title}>The service could not retrieve this page.</h3>
       <p className={styles.copy}>

@@ -1,6 +1,6 @@
-import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
+import { AppIcon } from "../../../app/icons/AppIcon";
 import { CaseRiskBadge } from "./CaseRiskBadge";
 import { formatStatusLabel } from "../filterOptions";
 import type { OperationalCase } from "../types";
@@ -75,7 +75,7 @@ export function CaseDetailDrawer({ selectedCase, onClose }: CaseDetailDrawerProp
             <p className={styles.subtitle}>{selectedCase.reportType}</p>
           </div>
           <button className={styles.close} type="button" aria-label="Close details" onClick={onClose}>
-            <X aria-hidden="true" size={20} />
+            <AppIcon name="close" width={20} />
           </button>
         </header>
 

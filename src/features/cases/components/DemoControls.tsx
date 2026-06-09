@@ -1,4 +1,4 @@
-import { RotateCcw, Trash2, Zap } from "lucide-react";
+import { AppIcon } from "../../../app/icons/AppIcon";
 import styles from "./DemoControls.module.css";
 
 const latencyOptions = [0, 300, 800, 1500, 2500];
@@ -41,19 +41,19 @@ export function DemoControls({
       </label>
 
       <button className={styles.button} disabled={isBusy} type="button" onClick={onFailNextFetch}>
-        <Zap aria-hidden="true" size={16} />
+        <AppIcon name="fail" width={16} />
         Fail next fetch
       </button>
       <button className={styles.button} disabled={isBusy} type="button" onClick={onFailNextUpdate}>
-        <Zap aria-hidden="true" size={16} />
+        <AppIcon name="fail" width={16} />
         Fail next update
       </button>
       <button className={styles.button} disabled={isBusy} type="button" onClick={onClearCache}>
-        <Trash2 aria-hidden="true" size={16} />
+        <AppIcon name="cache" width={16} />
         Clear cache
       </button>
       <button className={styles.button} disabled={isBusy} type="button" onClick={onResetData}>
-        <RotateCcw aria-hidden="true" size={16} />
+        <AppIcon name="reset" width={16} />
         Reset data
       </button>
     </section>

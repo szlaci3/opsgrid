@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { Eye } from "lucide-react";
+import { AppIcon } from "../../app/icons/AppIcon";
 import { CaseRiskBadge } from "./components/CaseRiskBadge";
 import { CaseStatusSelect } from "./components/CaseStatusSelect";
 import { formatStatusLabel } from "./filterOptions";
@@ -147,7 +147,7 @@ export function buildCaseColumns({
             onViewCase(row.original);
           }}
         >
-          <Eye aria-hidden="true" size={18} />
+          <AppIcon name="details" width={18} />
         </button>
       ),
       size: 86,
