@@ -252,13 +252,19 @@ export function CasesPage() {
     <main className={styles.page}>
       <section className={styles.topGrid}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>Regulatory Operations Table System</p>
-          <h1 className={styles.title}>OpsGrid</h1>
-          <p className={styles.subtitle}>
-            An async data table demo for operational compliance records, showing debounced
-            search, server-style filtering, pagination, virtualization, caching, optimistic
-            edits, rollback, and error recovery.
-          </p>
+          <div className={styles.brandBlock}>
+            <span className={styles.markFrame} aria-hidden="true">
+            </span>
+            <div className={styles.brandCopy}>
+              <p className={styles.eyebrow}>Regulatory Operations Table System</p>
+              <h1 className={styles.title}>OpsGrid</h1>
+              <p className={styles.subtitle}>
+                An async data table demo for operational compliance records, showing debounced
+                search, server-style filtering, pagination, virtualization, caching, optimistic
+                edits, rollback, and error recovery.
+              </p>
+            </div>
+          </div>
         </header>
 
         <DemoControls
