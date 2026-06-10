@@ -15,9 +15,9 @@
 
 .topLeft {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: clamp(80px, 9vw, 150px);
+  top: 35px;
+  left: -30px;
+  width: clamp(210px, 20vw, 260px);
 }
 
 .bottomLeft {
