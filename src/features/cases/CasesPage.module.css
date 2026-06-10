@@ -19,27 +19,6 @@
   min-height: 178px;
   align-items: center;
   padding: 22px 28px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(180deg, rgba(231, 204, 142, 0.13), transparent 1px),
-    linear-gradient(0deg, rgba(231, 204, 142, 0.15), transparent 1px),
-    linear-gradient(135deg, rgba(231, 204, 142, 0.13), transparent 34%),
-    radial-gradient(circle at 17% 48%, rgba(168, 85, 247, 0.22), transparent 15rem),
-    linear-gradient(90deg, rgba(33, 22, 49, 0.92), rgba(16, 11, 24, 0.94));
-  box-shadow: var(--shadow-panel), var(--shadow-glow);
-}
-
-.header::after {
-  position: absolute;
-  inset: 11px;
-  pointer-events: none;
-  content: "";
-  border: 1px solid rgba(231, 204, 142, 0.18);
-  border-radius: 8px;
-  box-shadow:
-    inset 22px 0 0 -21px rgba(231, 204, 142, 0.32),
-    inset -22px 0 0 -21px rgba(231, 204, 142, 0.32);
 }
 
 .brandBlock {
@@ -58,29 +37,47 @@
   width: clamp(86px, 9vw, 132px);
   aspect-ratio: 1;
   place-items: center;
-  border-right: 1px solid rgba(231, 204, 142, 0.18);
 }
 
 .brandCopy {
   min-width: 0;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  color: var(--color-gold);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .title {
   margin: 0;
-  color: var(--color-text);
   font-family: var(--font-display);
-  font-size: 5.2rem;
-  font-weight: 700;
-  line-height: 0.92;
+  font-size: clamp(2.8rem, 4.8vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: 0.025em;
+
+  color: transparent;
+  background:
+    linear-gradient(
+      180deg,
+      #fff3c4 0%,
+      #e7cc8e 36%,
+      #b97932 72%,
+      #7a441e 100%
+    );
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  text-shadow: 0 1px 0 rgba(255, 244, 196, .1), 0 0 18px rgba(231, 204, 142, .1), 0 0 36px rgba(168, 85, 247, 0.6)
+}
+
+.eyebrow {
+  margin: 0.45rem 0 0;
+  color: #e7cc8e;
+  font-family: var(--font-display);
+  font-size: clamp(0.72rem, 0.9vw, 0.95rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 12px rgba(231, 204, 142, 0.22),
+    0 0 22px rgba(168, 85, 247, 0.12);
 }
 
 .subtitle {
