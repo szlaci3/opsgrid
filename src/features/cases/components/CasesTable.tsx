@@ -108,6 +108,9 @@ export function CasesTable({
   });
 
   const rows = table.getRowModel().rows;
+  const hasRows = rows.length > 0;
+  const shouldShowBlockingError = isError && !hasRows;
+  const shouldShowCachedRefreshError = isError && hasRows;
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
@@ -141,9 +144,16 @@ export function CasesTable({
             </button>
           </div>
         </div>
-        <span>
+        <span className={styles.queryStatus} aria-live="polite">
           {isFetching ? (
             <span className={styles.fetching}>Refreshing cached records...</span>
+          ) : shouldShowCachedRefreshError ? (
+            <>
+              <span className={styles.refreshError}>Refresh failed. Showing cached records.</span>
+              <button className={styles.inlineRetry} type="button" onClick={onRetry}>
+                Retry
+              </button>
+            </>
           ) : (
             "Cached pages enabled by TanStack Query"
           )}
@@ -182,10 +192,10 @@ export function CasesTable({
           </div>
 
           {isLoading ? <TableSkeleton /> : null}
-          {isError ? <ErrorState onRetry={onRetry} /> : null}
-          {!isLoading && !isError && rows.length === 0 ? <EmptyState /> : null}
+          {shouldShowBlockingError ? <ErrorState onRetry={onRetry} /> : null}
+          {!isLoading && !isError && !hasRows ? <EmptyState /> : null}
 
-          {!isLoading && !isError && rows.length > 0 ? (
+          {!isLoading && hasRows ? (
             <div
               className={styles.tbody}
               role="rowgroup"

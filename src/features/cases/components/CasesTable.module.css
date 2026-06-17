@@ -70,8 +70,38 @@
   opacity: 0.58;
 }
 
+.queryStatus {
+  display: inline-flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .fetching {
   color: #bbf7d0;
+}
+
+.refreshError {
+  color: #fca5a5;
+  font-weight: 800;
+}
+
+.inlineRetry {
+  height: 28px;
+  border: 1px solid rgba(252, 165, 165, 0.42);
+  border-radius: var(--radius-sm);
+  background: rgba(252, 165, 165, 0.08);
+  color: var(--color-text);
+  padding: 0 10px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.inlineRetry:hover {
+  border-color: rgba(252, 165, 165, 0.72);
+  background: rgba(252, 165, 165, 0.14);
 }
 
 .scroll {

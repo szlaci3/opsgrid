@@ -52,6 +52,7 @@ export function CasesPage() {
   );
 
   const casesQuery = useCasesQuery(queryParams);
+  const refetchCases = casesQuery.refetch;
   const patchCaseMutation = usePatchCaseMutation();
   const bulkReviewMutation = useBulkReviewMutation();
 
@@ -234,8 +235,8 @@ export function CasesPage() {
   const handleClearCache = useCallback(() => {
     queryClient.clear();
     setNotice({ message: "Cache cleared.", kind: "success" });
-    void casesQuery.refetch();
-  }, [casesQuery]);
+    void refetchCases();
+  }, [queryClient, refetchCases]);
 
   const handleResetData = useCallback(() => {
     void runDemoAction(async () => {
