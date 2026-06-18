@@ -5,6 +5,15 @@
   z-index: 1;
 }
 
+@media (min-width: 861px) and (min-height: 700px) {
+  .page {
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    gap: clamp(10px, 1.8vh, 18px);
+  }
+}
+
 .topGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
@@ -109,6 +118,10 @@
 }
 
 .notice {
+  position: fixed;
+  z-index: 30;
+  top: 16px;
+  right: 16px;
   justify-self: start;
   max-height: 0;
   overflow: hidden;
@@ -141,7 +154,7 @@
   color: #fecaca;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 860px) {
   .topGrid {
     grid-template-columns: 1fr;
   }
