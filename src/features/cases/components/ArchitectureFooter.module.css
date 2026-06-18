@@ -29,6 +29,8 @@
   margin: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .footer[data-expanded="true"] {
