@@ -46,6 +46,19 @@ function getShowingText(data: CasesResponse | undefined): string {
   return `Showing ${start.toLocaleString()}-${end.toLocaleString()} of ${data.total.toLocaleString()} cases`;
 }
 
+function SortIndicator({ direction }: { direction: false | "asc" | "desc" }) {
+  if (!direction) return null;
+
+  return (
+    <span
+      className={styles.sortIndicator}
+      aria-hidden="true"
+    >
+      {direction === "asc" ? " ↑" : " ↓"}
+    </span>
+  );
+}
+
 export function CasesTable({
   data,
   isLoading,
@@ -165,28 +178,38 @@ export function CasesTable({
           <div className={styles.thead} role="rowgroup">
             {table.getHeaderGroups().map((headerGroup) => (
               <div className={styles.tr} key={headerGroup.id} role="row">
-                {headerGroup.headers.map((header) => (
-                  <div
-                    className={styles.th}
-                    key={header.id}
-                    role="columnheader"
-                    style={{ width: header.getSize() }}
-                  >
-                    {header.column.getCanSort() ? (
-                      <button
-                        className={styles.sortButton}
-                        type="button"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === "asc" ? " asc" : null}
-                        {header.column.getIsSorted() === "desc" ? " desc" : null}
-                      </button>
-                    ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
-                    )}
-                  </div>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const sortDirection = header.column.getIsSorted();
+
+                  return (
+                    <div
+                      className={styles.th}
+                      key={header.id}
+                      role="columnheader"
+                      style={{ width: header.getSize() }}
+                      aria-sort={
+                        sortDirection === "asc"
+                          ? "ascending"
+                          : sortDirection === "desc"
+                            ? "descending"
+                            : "none"
+                      }
+                    >
+                      {header.column.getCanSort() ? (
+                        <button
+                          className={styles.sortButton}
+                          type="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <SortIndicator direction={sortDirection} />
+                        </button>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
