@@ -95,6 +95,10 @@
   background: rgba(16, 11, 24, 0.98);
 }
 
+.thead .th input[type="checkbox"] {
+  min-width: 18px; 
+}
+
 .tr {
   display: flex;
   width: 100%;
@@ -136,6 +140,11 @@
   color: var(--color-text);
 }
 
+.sortIndicator {
+  font-size: 13px;
+  line-height: 1;
+}
+
 .tbody {
   position: relative;
   display: block;
@@ -165,6 +174,8 @@
 }
 
 .cellText {
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

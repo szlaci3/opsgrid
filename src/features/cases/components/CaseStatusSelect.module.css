@@ -1,5 +1,6 @@
 .select {
-  width: 122px;
+  width: 100%;
+  min-width: 0;
   height: 34px;
   border: 1px solid rgba(231, 204, 142, 0.28);
   border-radius: var(--radius-sm);
