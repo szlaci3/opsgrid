@@ -37,7 +37,7 @@ body::after {
   min-height: 100vh;
 }
 
-@media (min-width: 861px) and (min-height: 700px) {
+@media (min-width: 861px) and (min-height: 860px) {
   html,
   body,
   #root {

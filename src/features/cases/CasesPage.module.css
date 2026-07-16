@@ -5,7 +5,7 @@
   z-index: 1;
 }
 
-@media (min-width: 861px) and (min-height: 700px) {
+@media (min-width: 861px) and (min-height: 860px) {
   .page {
     height: 100%;
     min-height: 0;

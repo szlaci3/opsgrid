@@ -4,7 +4,7 @@
   padding: 24px 0;
 }
 
-@media (min-width: 861px) and (min-height: 700px) {
+@media (min-width: 861px) and (min-height: 860px) {
   .shell {
     height: 100dvh;
     padding-block: clamp(12px, 2vh, 24px);
