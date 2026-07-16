@@ -6,7 +6,7 @@
   box-shadow: var(--shadow-panel);
 }
 
-@media (min-width: 861px) and (min-height: 700px) {
+@media (min-width: 861px) and (min-height: 860px) {
   .panel {
     display: grid;
     min-height: 0;
@@ -117,7 +117,7 @@
   max-height: 610px;
 }
 
-@media (min-width: 861px) and (min-height: 700px) {
+@media (min-width: 861px) and (min-height: 860px) {
   .scroll {
     min-height: 0;
     max-height: none;
