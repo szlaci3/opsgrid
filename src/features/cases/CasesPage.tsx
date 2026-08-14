@@ -221,7 +221,6 @@ export function CasesPage() {
     void runDemoAction(async () => {
       await updateDemoConfig({ failNextFetch: true });
       setNotice({ message: "Next fetch will fail.", kind: "error" });
-      await queryClient.invalidateQueries({ queryKey: ["cases"] });
     });
   }, [runDemoAction]);
 
