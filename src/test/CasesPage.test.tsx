@@ -1,11 +1,12 @@
 import { screen, waitFor } from "@testing-library/react";
+import { focusManager } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { CasesPage } from "../features/cases/CasesPage";
 import { renderWithProviders } from "./testUtils";
 
 describe("CasesPage Integration Tests", () => {
-  it("renders the table and loads cases from MSW", async () => {
+  it("TC-001 renders the table and loads cases from MSW", async () => {
     renderWithProviders(<CasesPage />);
 
     expect(screen.getByRole("heading", { name: "OpsGrid" })).toBeInTheDocument();
@@ -15,7 +16,7 @@ describe("CasesPage Integration Tests", () => {
     });
   });
 
-  it("arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", async () => {
+  it("TC-040 and TC-041 arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CasesPage />);
 
@@ -55,7 +56,7 @@ describe("CasesPage Integration Tests", () => {
     });
   });
 
-  it("arms fail-next-mutation, optimistically updates status, then rolls back on failure", async () => {
+  it("TC-036 arms fail-next-mutation, optimistically updates status, then rolls back on failure", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CasesPage />);
 
@@ -86,7 +87,7 @@ describe("CasesPage Integration Tests", () => {
     });
   });
 
-  it("successfully updates case status when mutation succeeds", async () => {
+  it("TC-035 successfully updates case status when mutation succeeds", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CasesPage />);
 
@@ -108,7 +109,7 @@ describe("CasesPage Integration Tests", () => {
     });
   });
 
-  it("allows selecting rows and executing bulk review", async () => {
+  it("TC-037 allows selecting rows and executing bulk review", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CasesPage />);
 
@@ -130,4 +131,68 @@ describe("CasesPage Integration Tests", () => {
       expect(screen.getByText("Selected cases marked as reviewed.")).toBeInTheDocument();
     });
   });
+
+  it("TC-057 keeps cached rows visible and shows an inline retry when a background refresh fails with cached data present", async () => {
+    const user = userEvent.setup();
+    const { queryClient } = renderWithProviders(<CasesPage />);
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+    });
+
+    // Arm fetch failure
+    const failFetchBtn = screen.getByRole("button", { name: /fail next fetch/i });
+    await user.click(failFetchBtn);
+
+    // Trigger a background refetch for the current query while cached rows are visible
+    void queryClient.invalidateQueries({ queryKey: ["cases"] });
+
+    // Assert: Table rows are STILL rendered, blocking ErrorState is NOT displayed
+    await waitFor(() => {
+      expect(screen.getByText("Refresh failed. Showing cached records.")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
+    expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+
+    // Click the inline Retry button
+    const inlineRetryBtn = screen.getByRole("button", { name: /^retry$/i });
+    await user.click(inlineRetryBtn);
+
+    // Assert: recovery succeeds and status returns to normal cached state
+    await waitFor(() => {
+      expect(screen.queryByText("Refresh failed. Showing cached records.")).not.toBeInTheDocument();
+      expect(screen.getByText("Cached pages enabled by TanStack Query")).toBeInTheDocument();
+    });
+  });
+
+  it("TC-046 keeps table rows visible after returning from a three-minute inactive-tab interval", async () => {
+    const { queryClient } = renderWithProviders(<CasesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+    });
+
+    const activeCasesQuery = queryClient
+      .getQueryCache()
+      .getAll()
+      .find((query) => query.queryKey[0] === "cases");
+    expect(activeCasesQuery).toBeDefined();
+
+    // Keep the tab inactive for the full manual-regression interval.
+    focusManager.setFocused(false);
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, 3 * 60 * 1_000);
+    });
+    focusManager.setFocused(true);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
+      expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+      expect(activeCasesQuery!.state.dataUpdatedAt).toBeGreaterThan(Date.now() - 10_000);
+    });
+
+    expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
+  }, 190_000);
 });

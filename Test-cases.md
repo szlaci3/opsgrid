@@ -18,9 +18,9 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### Tier allocation
 
-- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042.
+- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042, TC-046 and TC-057.
 - **Tier 2:** TC-003, TC-005, TC-008 through TC-012, TC-015, TC-017 through TC-019, TC-024 through TC-026, TC-028 through TC-031, TC-034, TC-044, and TC-045.
-- **Tier 3:** TC-002, TC-020 through TC-022, TC-033, TC-039, TC-043, and TC-046 through TC-056.
+- **Tier 3:** TC-002, TC-020 through TC-022, TC-033, TC-039, TC-043, and TC-047 through TC-056.
 
 ## Initial page and loading
 
@@ -765,6 +765,31 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 **Status:** Not executed
 
+### TC-057 - Failed background refresh preserves cached rows
+
+**Tier:** Tier 1 - Vitest and React Testing Library
+
+**Purpose:** Verify that a failed refetch of the active query is treated as a non-blocking refresh error when a previously successful result remains available.
+
+**Preconditions:** The initial page of cases has loaded successfully. In the automated test, use the active `QueryClient` to invalidate the `cases` query without changing page, search, filters, or sorting.
+
+**Steps:**
+1. Load OpsGrid and wait until rows 1-25 are visible.
+2. Select Fail next fetch.
+3. Invalidate the active `cases` query to start a background refetch of the same page.
+4. Wait for the request to fail.
+5. Select the inline Retry action.
+
+**Expected outcome:**
+- The message `Refresh failed. Showing cached records.` is visible after the failed refetch.
+- The previously loaded rows and the `Showing 1-25...` footer remain visible.
+- The blocking `The service could not retrieve this page.` error state is not displayed.
+- Selecting Retry successfully refreshes the page and restores `Cached pages enabled by TanStack Query`.
+
+**Actual outcome:**
+
+**Status:** Not executed
+
 ### TC-043 - Latency selector affects future API responses
 
 **Purpose:** Verify configurable simulated network latency.
@@ -820,24 +845,28 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-046 - Table remains visible after a long inactive-tab interval
 
-**Tier:** Tier 3 - Extended regression suite
+**Tier:** Tier 1 - Extended regression suite
 
 **Purpose:** Verify that leaving OpsGrid in an inactive browser tab does not leave the table blank or unusable when the user returns.
 
 **Steps:**
-1. Open OpsGrid.
-2. Open a second browser tab to a blank page and leave the OpsGrid tab inactive for 10 minutes.
-3. Navigate back to the OpsGrid tab.
-4. Wait 1000 ms.
-5. View the table content.
+1. Load OpsGrid.
+2. Wait until rows 1-25 are visible.
+3. Invalidate the active `cases` query to start a background refetch of the same page.
+4. Wait for the request to fail.
+5. Select the inline Retry action.
 
 **Expected outcome:**
 - Case data is still visible in the table.
+- After Retry is clicked, data is refreshed and "Refresh failed" disappears.
 
 **Actual outcome:**
-- Page displayed correctly at step 5.
+- After step 4, data is visible and "Refresh failed. Showing cached records" is displayed.
+- The only way out from this error state is F5-Refresh.
+- If Retry is clicked, nothing changes.
+- If Pagination's Next is clicked, "The service could not retrieve this page." is displayed.
 
-**Status:** Passed
+**Status:** Failed
 
 ### TC-047 - Narrow mobile viewport layout
 
