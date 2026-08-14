@@ -862,8 +862,9 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 - The blocking `The service could not retrieve this page.` error state is not displayed.
 
 **Actual outcome:**
-- The table remains visible after returning from the three-minute inactive-tab interval.
-- The automated regression test confirms that rows remain rendered after the additional 1000 ms wait.
+- The Playwright test passed in its version-matched Chromium browser after a three-minute frozen/inactive lifecycle interval.
+- The same footer and first loaded row remained rendered after returning to the table and waiting an additional 1000 ms.
+- The blocking error state was not displayed.
 
 **Status:** Passed
 

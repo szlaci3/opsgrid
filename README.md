@@ -71,6 +71,27 @@ The app includes visible demo controls so the async behavior can be tested direc
 
 ---
 
+## Testing
+
+Run the fast Vitest suite:
+
+```bash
+npm test
+```
+
+Install Playwright's version-matched Chromium once, then run the browser-level TC-046 regression:
+
+```bash
+npx playwright install chromium
+npm run test:e2e:tc046
+```
+
+TC-046 intentionally runs for just over three minutes. It opens a second browser page, delivers the
+same visibility transition as a manual tab switch, and uses Chromium's native frozen/active lifecycle
+transition so the inactive-page condition is deterministic across Playwright runners.
+
+---
+
 ## Tech Stack
 
 * React
