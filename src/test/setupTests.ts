@@ -1,9 +1,22 @@
 import "@testing-library/jest-dom/vitest";
+import { createElement } from "react";
 import { afterAll, afterEach, beforeAll } from "vitest";
+import { vi } from "vitest";
 import { setupServer } from "msw/node";
 import { handlers } from "../mocks/handlers";
 import { resetCases } from "../mocks/db";
 import { mockConfig } from "../mocks/mockConfig";
+
+// Icons are not part of these integration tests. Keep the Iconify boundary
+// synchronous so its on-demand network loader cannot update ForwardRef after
+// a test's act scope has ended.
+vi.mock("@iconify/react", () => ({
+  Icon: ({ icon, ...props }: { icon: string } & Record<string, unknown>) =>
+    createElement("span", {
+      ...props,
+      "data-icon": icon,
+    }),
+}));
 
 export const server = setupServer(...handlers);
 

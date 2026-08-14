@@ -16,6 +16,88 @@ describe("CasesPage Integration Tests", () => {
     });
   });
 
+  it("debounces search input and replaces the unfiltered result set", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<CasesPage />);
+
+    const initialFooter = (await screen.findByText("Showing 1-25 of 5,000 cases")).textContent;
+    const search = screen.getByRole("searchbox", { name: "Search" });
+
+    await user.type(search, "liquidity");
+
+    expect(search).toHaveValue("liquidity");
+    expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/showing 1-25 of/i).textContent).not.toBe(
+        initialFooter,
+      );
+    });
+
+    expect(screen.getAllByText("Liquidity Coverage Report").length).toBeGreaterThan(0);
+  });
+
+  it("filters visible rows by risk level", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<CasesPage />);
+
+    const initialFooter = (await screen.findByText("Showing 1-25 of 5,000 cases")).textContent;
+    const riskFilter = screen.getByRole("combobox", { name: "Risk" });
+
+    await user.selectOptions(riskFilter, "critical");
+
+    await waitFor(() => {
+      expect(screen.getByText(/showing 1-25 of/i).textContent).not.toBe(
+        initialFooter,
+      );
+    });
+
+    const dataRows = screen.getAllByRole("row").slice(1);
+    expect(dataRows.length).toBeGreaterThan(0);
+    dataRows.forEach((row) => expect(row).toHaveTextContent("Critical"));
+  });
+
+  it("opens and closes a case detail drawer", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<CasesPage />);
+
+    await screen.findByText("Showing 1-25 of 5,000 cases");
+    const detailsButton = screen.getAllByRole("button", { name: /view details for/i })[0];
+
+    await user.click(detailsButton);
+
+    expect(screen.getByRole("complementary", { name: "Case details" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Operational Summary" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Close details" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("complementary", { name: "Case details" })).not.toBeInTheDocument();
+    });
+  });
+
+  it("resets search and filters to the initial page", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<CasesPage />);
+
+    const search = screen.getByRole("searchbox", { name: "Search" });
+    const statusFilter = screen.getByRole("combobox", { name: "Status" });
+    const riskFilter = screen.getByRole("combobox", { name: "Risk" });
+
+    await user.type(search, "liquidity");
+    await user.selectOptions(statusFilter, "approved");
+    await user.selectOptions(riskFilter, "critical");
+    await user.click(screen.getByRole("button", { name: "Reset filters" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+    });
+
+    expect(search).toHaveValue("");
+    expect(statusFilter).toHaveValue("all");
+    expect(riskFilter).toHaveValue("all");
+  });
+
   it("TC-040 and TC-041 arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CasesPage />);
