@@ -311,6 +311,7 @@ export function CasesPage() {
         isError={casesQuery.isError}
         isFetching={casesQuery.isFetching}
         isLoading={casesQuery.isLoading}
+        isRefetchError={casesQuery.isRefetchError}
         isReviewing={bulkReviewMutation.isPending}
         pendingStatusIds={pendingStatusIds}
         selectedIds={selectedIds}

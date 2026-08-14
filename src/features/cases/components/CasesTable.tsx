@@ -20,6 +20,7 @@ interface CasesTableProps {
   isLoading: boolean;
   isError: boolean;
   isFetching: boolean;
+  isRefetchError: boolean;
   isReviewing: boolean;
   selectedIds: Set<string>;
   pendingStatusIds: Set<string>;
@@ -64,6 +65,7 @@ export function CasesTable({
   isLoading,
   isError,
   isFetching,
+  isRefetchError,
   isReviewing,
   selectedIds,
   pendingStatusIds,
@@ -122,8 +124,8 @@ export function CasesTable({
 
   const rows = table.getRowModel().rows;
   const hasRows = rows.length > 0;
-  const shouldShowBlockingError = isError && !hasRows;
-  const shouldShowCachedRefreshError = isError && hasRows;
+  const shouldShowBlockingError = isError && !isRefetchError;
+  const shouldShowCachedRefreshError = isRefetchError;
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
@@ -216,7 +218,7 @@ export function CasesTable({
 
           {isLoading ? <TableSkeleton /> : null}
           {shouldShowBlockingError ? <ErrorState onRetry={onRetry} /> : null}
-          {!isLoading && !isError && !hasRows ? <EmptyState /> : null}
+          {!isLoading && !hasRows && (!isError || isRefetchError) ? <EmptyState /> : null}
 
           {!isLoading && hasRows ? (
             <div

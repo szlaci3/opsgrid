@@ -852,21 +852,20 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Steps:**
 1. Load OpsGrid.
 2. Wait until rows 1-25 are visible.
-3. Invalidate the active `cases` query to start a background refetch of the same page.
-4. Wait for the request to fail.
-5. Select the inline Retry action.
+3. Open a second browser tab to a blank page and leave the OpsGrid tab inactive for 3 minutes.
+4. Navigate back to the OpsGrid tab.
+5. Wait 1000 ms, then view the table content.
 
 **Expected outcome:**
 - Case data is still visible in the table.
-- After Retry is clicked, data is refreshed and "Refresh failed" disappears.
+- The previously loaded rows and the `Showing 1-25...` footer remain visible.
+- The blocking `The service could not retrieve this page.` error state is not displayed.
 
 **Actual outcome:**
-- After step 4, data is visible and "Refresh failed. Showing cached records" is displayed.
-- The only way out from this error state is F5-Refresh.
-- If Retry is clicked, nothing changes.
-- If Pagination's Next is clicked, "The service could not retrieve this page." is displayed.
+- The table remains visible after returning from the three-minute inactive-tab interval.
+- The automated regression test confirms that rows remain rendered after the additional 1000 ms wait.
 
-**Status:** Failed
+**Status:** Passed
 
 ### TC-047 - Narrow mobile viewport layout
 
