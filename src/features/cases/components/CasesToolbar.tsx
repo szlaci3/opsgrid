@@ -28,6 +28,7 @@ export function CasesToolbar({
           className={styles.input}
           placeholder="Search cases by institution, report type, code, reviewer..."
           type="search"
+          spellCheck={false}
           value={searchInput}
           onChange={(event) => onSearchInputChange(event.target.value)}
         />

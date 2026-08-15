@@ -26,4 +26,4 @@ test-results/
 *.sw?
 
 myDescription.md
-Specs.md
+docs/
