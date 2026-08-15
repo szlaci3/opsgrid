@@ -1,8 +1,8 @@
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { resetDemoData, updateDemoConfig } from "../../api/casesApi";
 import type { CasesQueryParams } from "../../api/apiTypes";
-import { queryClient } from "../../app/queryClient";
 import { ArchitectureFooter } from "./components/ArchitectureFooter";
 import { CaseDetailDrawer } from "./components/CaseDetailDrawer";
 import { CasesTable } from "./components/CasesTable";
@@ -37,6 +37,7 @@ const initialParams: CasesQueryParams = {
 };
 
 export function CasesPage() {
+  const casesQueryClient = useQueryClient();
   const [params, setParams] = useState<CasesQueryParams>(initialParams);
   const [searchInput, setSearchInput] = useState(initialParams.search);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -233,10 +234,10 @@ export function CasesPage() {
   }, [runDemoAction]);
 
   const handleClearCache = useCallback(() => {
-    queryClient.clear();
+    casesQueryClient.clear();
     setNotice({ message: "Cache cleared.", kind: "success" });
     void refetchCases();
-  }, [queryClient, refetchCases]);
+  }, [casesQueryClient, refetchCases]);
 
   const handleResetData = useCallback(() => {
     void runDemoAction(async () => {
@@ -244,9 +245,9 @@ export function CasesPage() {
       setSelectedIds(new Set());
       setSelectedCase(null);
       setNotice({ message: "Data reset.", kind: "success" });
-      await queryClient.invalidateQueries({ queryKey: ["cases"] });
+      await casesQueryClient.invalidateQueries({ queryKey: ["cases"] });
     });
-  }, [runDemoAction]);
+  }, [casesQueryClient, runDemoAction]);
 
   return (
     <main className={styles.page}>
