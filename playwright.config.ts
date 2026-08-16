@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const desktopViewport = { width: 1280, height: 720 };
+const mobileViewport = { width: 375, height: 667 };
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -12,10 +15,19 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "Google Chrome",
+      name: "desktop",
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome',
+        viewport: desktopViewport,
+      },
+    },
+    {
+      name: "mobile",
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+        viewport: mobileViewport,
       },
     },
   ],
