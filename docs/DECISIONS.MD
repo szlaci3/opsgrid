@@ -8,15 +8,15 @@ This document exists to prevent architectural drift. Coding agents must follow t
 
 ---
 
-# Decision 1 — Prefer partial text matching for dynamic test values
+# Decision 1 — Prefer partial text matching for dynamic UI test values
 
 ## Decision
 
-Prefer partial text matching for dynamic values that are outside the test's purpose.
+Prefer partial text matching for dynamic values that are outside the test's purpose, in both Playwright and Vitest RTL tests.
 
 ## Example
 
-For `Showing 1-25 of 5,000 cases`, assert `Showing 1-25` unless the total is the behavior under test.
+For `Showing 1-25 of 5,000 cases`, a Playwright test can use `page.getByText("Showing 1-25")`; a Vitest RTL test can use `screen.getByText(/^Showing 1-25\b/)`. Assert `Showing 1-25` unless the total is the behavior under test.
 
 ## Rationale
 
