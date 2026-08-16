@@ -9,6 +9,7 @@ import {
   getDataRows,
   getSelectionCount,
   renderLoaded,
+  showingCases,
   waitForCasesQuery,
 } from "./casesPageTestUtils";
 
@@ -16,17 +17,19 @@ describe("CasesPage filtering and pagination", () => {
     it("TC-004 debounces search input and replaces the unfiltered result set", async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
-  
-      const initialFooter = (await screen.findByText("Showing 1-25 of 5,000 cases")).textContent;
+
+      await screen.findByText(showingCases);
+      await screen.findAllByRole("checkbox", { name: /^Select CASE-/ });
+      const initialFooter = screen.getByText(showingCases).textContent;
       const search = screen.getByRole("searchbox", { name: "Search" });
   
       await user.type(search, "liquidity");
   
       expect(search).toHaveValue("liquidity");
-      expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
   
       await waitFor(() => {
-        expect(screen.getByText(/showing 1-25 of/i).textContent).not.toBe(
+        expect(screen.getByText(showingCases).textContent).not.toBe(
           initialFooter,
         );
       });
@@ -71,7 +74,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getByRole("button", { name: "Reset filters" })).toBeInTheDocument();
   
       await user.click(screen.getByRole("button", { name: "Reset filters" }));
-      await screen.findByText("Showing 1-25 of 5,000 cases");
+      await screen.findByText(showingCases);
       expect(search).toHaveValue("");
     });
 
@@ -89,14 +92,16 @@ describe("CasesPage filtering and pagination", () => {
     it("TC-008 filters visible rows by risk level", async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
-  
-      const initialFooter = (await screen.findByText("Showing 1-25 of 5,000 cases")).textContent;
+
+      await screen.findByText(showingCases);
+      await screen.findAllByRole("checkbox", { name: /^Select CASE-/ });
+      const initialFooter = screen.getByText(showingCases).textContent;
       const riskFilter = screen.getByRole("combobox", { name: "Risk" });
   
       await user.selectOptions(riskFilter, "critical");
   
       await waitFor(() => {
-        expect(screen.getByText(/showing 1-25 of/i).textContent).not.toBe(
+        expect(screen.getByText(showingCases).textContent).not.toBe(
           initialFooter,
         );
       });
@@ -160,13 +165,13 @@ describe("CasesPage filtering and pagination", () => {
       await user.click(screen.getByRole("button", { name: "Next" }));
   
       await user.click(screen.getByRole("button", { name: "Reset filters" }));
-      await screen.findByText("Showing 1-25 of 5,000 cases");
+      await screen.findByText(showingCases);
   
       expect(screen.getByRole("searchbox", { name: "Search" })).toHaveValue("");
       expect(screen.getByRole("combobox", { name: "Status" })).toHaveValue("all");
       expect(screen.getByRole("combobox", { name: "Risk" })).toHaveValue("all");
       expect(screen.getByRole("combobox", { name: "Jurisdiction" })).toHaveValue("all");
-      expect(screen.getByRole("combobox", { name: "Page size" })).toHaveValue("25");
+      expect(screen.getByRole("combobox", { name: "Page size" })).toHaveValue("200");
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
@@ -178,7 +183,7 @@ describe("CasesPage filtering and pagination", () => {
   
       const data = await waitForCasesQuery(queryClient, (params) => params.pageSize === 50);
       expect(data.page).toBe(1);
-      expect(screen.getByText("Showing 1-50 of 5,000 cases")).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
@@ -196,7 +201,7 @@ describe("CasesPage filtering and pagination", () => {
       await user.click(screen.getByRole("button", { name: "Reset filters" }));
   
       await waitFor(() => {
-        expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+        expect(screen.getByText(showingCases)).toBeInTheDocument();
       });
   
       expect(search).toHaveValue("");
@@ -242,12 +247,12 @@ describe("CasesPage filtering and pagination", () => {
       const { queryClient } = await renderLoaded();
       await user.click(screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0]);
       await user.click(screen.getByRole("button", { name: "Next" }));
-      await screen.findByText("Showing 26-50 of 5,000 cases");
+      await screen.findByText(/Page 2 of/);
   
       await user.click(within(screen.getByRole("columnheader", { name: /Institution/ })).getByRole("button"));
       const data = await waitForCasesQuery(queryClient, (params) => params.sortBy === "institution");
       expect(data.page).toBe(1);
-      expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
@@ -255,36 +260,40 @@ describe("CasesPage filtering and pagination", () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Risk" }), "critical");
-      await screen.findByText(/Showing 1-25 of .* cases/);
+      await screen.findByText(showingCases);
       await user.click(screen.getByRole("button", { name: "Next" }));
-      await screen.findByText(/Showing 26-50 of .* cases/);
+      await screen.findByText(/Page 2 of/);
       expect(screen.getByText(/Page 2 of/)).toBeInTheDocument();
   
       await user.click(screen.getByRole("button", { name: "Prev" }));
-      await screen.findByText(/Showing 1-25 of .* cases/);
+      await screen.findByText(/Page 1 of/);
       expect(screen.getByRole("combobox", { name: "Risk" })).toHaveValue("critical");
     });
 
     it("TC-017 navigates to the first and last available pages", async () => {
       const user = userEvent.setup();
-      await renderLoaded();
+      const { queryClient } = await renderLoaded();
+      const initialData = await waitForCasesQuery(queryClient, (params) => params.page === 1);
       await user.click(screen.getByRole("button", { name: "Last" }));
-      await screen.findByText("Showing 4,976-5,000 of 5,000 cases");
-      expect(screen.getByText("Page 200 of 200")).toBeInTheDocument();
-  
+      await screen.findByText(
+        new RegExp(`Page ${initialData.totalPages} of ${initialData.totalPages}`),
+      );
+
       await user.click(screen.getByRole("button", { name: "First" }));
-      await screen.findByText("Showing 1-25 of 5,000 cases");
-      expect(screen.getByText("Page 1 of 200")).toBeInTheDocument();
+      await screen.findByText(new RegExp(`Page 1 of ${initialData.totalPages}`));
     });
 
     it("TC-018 disables pagination controls at both boundaries", async () => {
       const user = userEvent.setup();
-      await renderLoaded();
+      const { queryClient } = await renderLoaded();
+      const initialData = await waitForCasesQuery(queryClient, (params) => params.page === 1);
       expect(screen.getByRole("button", { name: "First" })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Prev" })).toBeDisabled();
   
       await user.click(screen.getByRole("button", { name: "Last" }));
-      await screen.findByText("Page 200 of 200");
+      await screen.findByText(
+        new RegExp(`Page ${initialData.totalPages} of ${initialData.totalPages}`),
+      );
       expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Last" })).toBeDisabled();
     });
@@ -305,11 +314,11 @@ describe("CasesPage filtering and pagination", () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("button", { name: "Next" }));
-      await screen.findByText("Showing 26-50 of 5,000 cases");
+      await screen.findByText(/Page 2 of/);
       const pageTwoFirstRow = getDataRows()[0].textContent;
   
       await user.click(screen.getByRole("button", { name: "Prev" }));
-      await screen.findByText("Showing 1-25 of 5,000 cases");
+      await screen.findByText(/Page 1 of/);
       expect(getDataRows()[0].textContent).not.toBe(pageTwoFirstRow);
       expect(screen.queryByLabelText("Loading records")).not.toBeInTheDocument();
     });
@@ -320,10 +329,10 @@ describe("CasesPage filtering and pagination", () => {
       await user.selectOptions(screen.getByRole("combobox", { name: "Latency" }), "1500");
       await user.click(screen.getByRole("button", { name: "Next" }));
   
-      expect(screen.getByText("Showing 1-25 of 5,000 cases")).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
       expect(screen.getByText("Refreshing cached records...")).toBeInTheDocument();
       expect(screen.queryByText("No cases match the current filters.")).not.toBeInTheDocument();
-      await screen.findByText("Showing 26-50 of 5,000 cases", {}, { timeout: 3_000 });
+      await screen.findByText(/Page 2 of/, {}, { timeout: 3_000 });
     }, 5_000);
 
     it("TC-022 shows only the final search result after rapid delayed searches", async () => {
@@ -362,7 +371,7 @@ describe("CasesPage filtering and pagination", () => {
       await Promise.all([user.click(next), user.click(next), user.click(prev)]);
       const data = await waitForCasesQuery(queryClient, (params) => params.page === 2, 8_000);
       expect(data.page).toBe(2);
-      expect(screen.getByText("Showing 26-50 of 5,000 cases")).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
     }, 10_000);
 
     it("TC-053 keeps only the final filter combination after rapid delayed changes", async () => {

@@ -8,7 +8,7 @@ import type { CaseStatus, OperationalCase } from "../types";
 
 export const initialCasesQueryParams: CasesQueryParams = {
   page: 1,
-  pageSize: 25,
+  pageSize: 200,
   search: "",
   status: "all",
   riskLevel: "all",

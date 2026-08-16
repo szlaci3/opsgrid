@@ -34,7 +34,7 @@ function shouldFail(kind: "fetch" | "mutation"): boolean {
 function getQueryParams(url: URL): CasesQueryParams {
   return {
     page: Number(url.searchParams.get("page") ?? 1),
-    pageSize: Number(url.searchParams.get("pageSize") ?? 50),
+    pageSize: Number(url.searchParams.get("pageSize") ?? 200),
     search: url.searchParams.get("search") ?? "",
     status: (url.searchParams.get("status") ?? "all") as CasesQueryParams["status"],
     riskLevel: (url.searchParams.get("riskLevel") ?? "all") as CasesQueryParams["riskLevel"],

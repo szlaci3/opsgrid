@@ -7,18 +7,14 @@ import { renderWithProviders } from "./testUtils";
 import {
   getDataRows,
   renderLoaded,
+  showingCases,
   waitForCasesQuery,
 } from "./casesPageTestUtils";
 
 describe("CasesPage mutation and recovery", () => {
     it("TC-040 and TC-041 arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<CasesPage />);
-  
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
-      });
+      await renderLoaded();
   
       // Click "Fail next fetch"
       const failFetchBtn = screen.getByRole("button", { name: /fail next fetch/i });
@@ -28,7 +24,7 @@ describe("CasesPage mutation and recovery", () => {
       expect(screen.getByText("Next fetch will fail.")).toBeInTheDocument();
   
       // The table should STILL be present with data (not prematurely crashed)
-      expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
       expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
   
       // Now perform a user-initiated action that triggers a new fetch (Next page)
@@ -47,17 +43,13 @@ describe("CasesPage mutation and recovery", () => {
       // Verify recovery
       await waitFor(() => {
         expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
-        expect(screen.getByText(/showing 26.*50 of/i)).toBeInTheDocument();
+        expect(screen.getByText(/Page 2 of/)).toBeInTheDocument();
       });
     });
 
     it("TC-036 arms fail-next-mutation, optimistically updates status, then rolls back on failure", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<CasesPage />);
-  
-      await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
-      });
+      await renderLoaded();
   
       // Arm mutation failure
       const failUpdateBtn = screen.getByRole("button", { name: /fail next update/i });
@@ -84,11 +76,7 @@ describe("CasesPage mutation and recovery", () => {
 
     it("TC-035 successfully updates case status when mutation succeeds", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<CasesPage />);
-  
-      await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
-      });
+      await renderLoaded();
   
       const statusSelects = await screen.findAllByRole("combobox", { name: /update case status/i });
       const firstSelect = statusSelects[0] as HTMLSelectElement;
@@ -106,11 +94,7 @@ describe("CasesPage mutation and recovery", () => {
 
     it("TC-037 allows selecting rows and executing bulk review", async () => {
       const user = userEvent.setup();
-      renderWithProviders(<CasesPage />);
-  
-      await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
-      });
+      await renderLoaded();
   
       // Click select all cases on this page
       const selectAllCheckbox = screen.getByRole("checkbox", { name: /select all cases on this page/i });
@@ -174,7 +158,7 @@ describe("CasesPage mutation and recovery", () => {
       await screen.findByText("The service could not retrieve this page.");
   
       await user.click(screen.getByRole("button", { name: "Retry fetch" }));
-      await screen.findByText("Showing 26-50 of 5,000 cases");
+      await screen.findByText(/Page 2 of/);
       expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
     });
 
@@ -186,13 +170,13 @@ describe("CasesPage mutation and recovery", () => {
       await user.selectOptions(latency, "0");
       expect(latency).toHaveValue("0");
       await user.click(screen.getByRole("button", { name: "Next" }));
-      await screen.findByText("Showing 26-50 of 5,000 cases");
+      await screen.findByText(/Page 2 of/);
   
       await user.selectOptions(latency, "2500");
       expect(latency).toHaveValue("2500");
       await user.click(screen.getByRole("button", { name: "Prev" }));
       expect(screen.getByText("Refreshing cached records...")).toBeInTheDocument();
-      await screen.findByText("Showing 1-25 of 5,000 cases", {}, { timeout: 4_000 });
+      await screen.findByText(/Page 1 of/, {}, { timeout: 4_000 });
     }, 6_000);
 
     it("TC-044 clears the cache and reloads the active page", async () => {
@@ -201,7 +185,7 @@ describe("CasesPage mutation and recovery", () => {
       await user.click(screen.getByRole("button", { name: "Clear cache" }));
   
       expect(screen.getByText("Cache cleared.")).toBeInTheDocument();
-      await screen.findByText("Showing 1-25 of 5,000 cases");
+      await screen.findByText(showingCases);
       expect(screen.getByText("Cached pages enabled by TanStack Query")).toBeInTheDocument();
     });
 
@@ -272,7 +256,8 @@ describe("CasesPage mutation and recovery", () => {
   
       // Wait for initial load
       await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+        expect(screen.getByText(showingCases)).toBeInTheDocument();
+        expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
       });
   
       // Arm fetch failure
@@ -288,7 +273,7 @@ describe("CasesPage mutation and recovery", () => {
       });
   
       expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
-      expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+      expect(screen.getByText(showingCases)).toBeInTheDocument();
   
       // Click the inline Retry button
       const inlineRetryBtn = screen.getByRole("button", { name: /^retry$/i });

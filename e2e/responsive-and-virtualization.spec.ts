@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("TC-048 and TC-049 responsiveness: Keep table controls and the detail drawer usable", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByText("Showing 1-25")).toBeVisible();
+  await expect(page.getByText(/^Showing .* cases$/)).toBeVisible();
 
   const table = page.getByRole("table");
   const scrollContainer = table.locator("..");
@@ -39,10 +39,10 @@ test("TC-048 and TC-049 responsiveness: Keep table controls and the detail drawe
 
 test("TC-051 virtualizes the maximum page size and opens a near-bottom record", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("Showing 1-25")).toBeVisible();
-
-  await page.getByRole("combobox", { name: "Page size" }).selectOption("200");
   await expect(page.getByText("Showing 1-200")).toBeVisible();
+
+  await page.getByRole("combobox", { name: "Page size" }).selectOption("500");
+  await expect(page.getByText("Showing 1-500")).toBeVisible();
 
   const table = page.getByRole("table");
   const scrollContainer = table.locator("..");

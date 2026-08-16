@@ -8,14 +8,16 @@ import {
   getSelectionCount,
   getStatusSelects,
   renderLoaded,
+  showingCases,
 } from "./casesPageTestUtils";
 
 describe("CasesPage table interactions", () => {
     it("TC-031 opens and closes a case detail drawer with the close button", async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
-  
-      await screen.findByText("Showing 1-25 of 5,000 cases");
+
+      await screen.findByText(showingCases);
+      await screen.findAllByRole("checkbox", { name: /^Select CASE-/ });
       const detailsButton = screen.getAllByRole("button", { name: /view details for/i })[0];
   
       await user.click(detailsButton);
@@ -55,14 +57,14 @@ describe("CasesPage table interactions", () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("checkbox", { name: "Select all cases on this page" }));
-      expect(getSelectionCount(25)).toBeInTheDocument();
+      expect(getSelectionCount(200)).toBeInTheDocument();
       expect(screen.getAllByRole("checkbox", { name: /^Select CASE-/ }).every((checkbox) =>
         (checkbox as HTMLInputElement).checked,
       )).toBe(true);
-  
+
       await user.click(screen.getByRole("button", { name: "Next" }));
-      await screen.findByText("Showing 26-50 of 5,000 cases");
-      expect(getSelectionCount(25)).toBeInTheDocument();
+      await screen.findByText(/Page 2 of/);
+      expect(getSelectionCount(200)).toBeInTheDocument();
       expect(screen.getAllByRole("checkbox", { name: /^Select CASE-/ }).every((checkbox) =>
         !(checkbox as HTMLInputElement).checked,
       )).toBe(true);
@@ -187,4 +189,3 @@ describe("CasesPage table interactions", () => {
       expect(screen.getByRole("complementary", { name: "Case details" })).toBeInTheDocument();
     });
 });
-

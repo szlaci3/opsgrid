@@ -7,7 +7,7 @@ test("TC-046 keeps table rows visible after a three-minute inactive-tab interval
 
   await page.goto("/");
 
-  const footer = page.getByText(/showing 1.*25 of/i);
+  const footer = page.getByText(/^Showing .* cases$/);
   const rows = page.getByRole("row");
 
   await expect(footer).toBeVisible();

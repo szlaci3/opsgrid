@@ -4,9 +4,12 @@ import type { CasesResponse, CasesQueryParams } from "../api/apiTypes";
 import { CasesPage } from "../features/cases/CasesPage";
 import { renderWithProviders } from "./testUtils";
 
+export const showingCases = /^Showing .* cases$/;
+
 export async function renderLoaded() {
   const result = renderWithProviders(<CasesPage />);
-  await screen.findByText("Showing 1-25 of 5,000 cases");
+  await screen.findByText(showingCases);
+  await screen.findAllByRole("checkbox", { name: /^Select CASE-/ });
   return result;
 }
 

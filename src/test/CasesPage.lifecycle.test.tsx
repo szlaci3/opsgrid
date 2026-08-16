@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { CasesPage } from "../features/cases/CasesPage";
 import { mockConfig } from "../mocks/mockConfig";
 import { renderWithProviders } from "./testUtils";
-import { renderLoaded } from "./casesPageTestUtils";
+import { renderLoaded, showingCases } from "./casesPageTestUtils";
 
 describe("CasesPage lifecycle and rendering", () => {
     it("TC-001 renders the table and loads cases from MSW", async () => {
@@ -13,7 +13,8 @@ describe("CasesPage lifecycle and rendering", () => {
       expect(screen.getByRole("heading", { name: "OpsGrid" })).toBeInTheDocument();
   
       await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+        expect(screen.getByText(showingCases)).toBeInTheDocument();
+        expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
       });
     });
 
@@ -24,7 +25,8 @@ describe("CasesPage lifecycle and rendering", () => {
       expect(screen.getByLabelText("Loading records")).toBeInTheDocument();
       expect(screen.queryByText("No cases match the current filters.")).not.toBeInTheDocument();
   
-      await screen.findByText("Showing 1-25 of 5,000 cases", {}, { timeout: 4_000 });
+      await screen.findByText(showingCases, {}, { timeout: 4_000 });
+      await screen.findAllByRole("checkbox", { name: /^Select CASE-/ }, { timeout: 4_000 });
     }, 5_000);
 
     it("TC-003 renders the documented page information architecture", async () => {
@@ -44,7 +46,8 @@ describe("CasesPage lifecycle and rendering", () => {
       const { queryClient } = renderWithProviders(<CasesPage />);
   
       await waitFor(() => {
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+        expect(screen.getByText(showingCases)).toBeInTheDocument();
+        expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
       });
   
       const activeCasesQuery = queryClient
@@ -62,7 +65,7 @@ describe("CasesPage lifecycle and rendering", () => {
   
       await waitFor(() => {
         expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
-        expect(screen.getByText(/showing 1.*25 of/i)).toBeInTheDocument();
+        expect(screen.getByText(showingCases)).toBeInTheDocument();
         expect(activeCasesQuery!.state.dataUpdatedAt).toBeGreaterThan(Date.now() - 10_000);
       });
   

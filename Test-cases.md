@@ -5,6 +5,7 @@
 - Record the observed result only after executing the case. Leave **Actual outcome** empty until then.
 - Create new cases with **Status: Not executed**. Update them to Passed, Failed, or Blocked only after execution.
 - Use the headed browser for visual, keyboard, and timing-sensitive cases. Add permanent Vitest and RTL coverage where the behavior can be reliably automated.
+- When an automated test only needs to confirm that the table has rendered, match the footer as `Showing .* cases`. This accommodates empty, partial, and full-page result sets. Because the initial render also shows `Showing 0 cases`, pair the matcher with a row or query-data assertion when loaded records are required. Assert an exact range only when that range is the behavior under test, such as TC-051's maximum-page-size coverage.
 
 ## Tiered testing strategy
 
@@ -36,8 +37,8 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 **Expected outcome:**
 - The OpsGrid heading is visible.
-- The table displays the first 25 rows.
-- The footer indicates that rows 1-25 of 5,000 cases are shown.
+- The table displays the initial server page, up to the configured page size.
+- The footer communicates the current result range using the `Showing … cases` format.
 
 **Actual outcome:**
 
@@ -217,7 +218,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Expected outcome:**
 - Search is empty.
 - Status, Risk, and Jurisdiction return to All.
-- Page size returns to 25 and the current page returns to 1.
+- Page size returns to 200 and the current page returns to 1.
 - Row selection is cleared.
 
 **Actual outcome:**
@@ -231,7 +232,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Steps:**
 1. Select 50 from Page size.
 2. Wait for the results to update.
-3. Select 100, then 200.
+3. Select 100, then 500.
 
 **Expected outcome:**
 - The table and footer reflect the selected page size, subject to the remaining result count.
@@ -306,8 +307,8 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 3. Select Prev.
 
 **Expected outcome:**
-- Next shows rows 26-50 and indicates page 2.
-- Prev returns to rows 1-25 and indicates page 1.
+- Next advances the showing range and indicates page 2.
+- Prev returns to page 1 and its corresponding showing range.
 - Active filters and sorting are preserved.
 
 **Actual outcome:**
@@ -774,7 +775,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Preconditions:** The initial page of cases has loaded successfully. In the automated test, use the active `QueryClient` to invalidate the `cases` query without changing page, search, filters, or sorting.
 
 **Steps:**
-1. Load OpsGrid and wait until rows 1-25 are visible.
+1. Load OpsGrid and wait for the table and showing footer to render.
 2. Select Fail next fetch.
 3. Invalidate the active `cases` query to start a background refetch of the same page.
 4. Wait for the request to fail.
@@ -782,7 +783,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 **Expected outcome:**
 - The message `Refresh failed. Showing cached records.` is visible after the failed refetch.
-- The previously loaded rows and the `Showing 1-25...` footer remain visible.
+- The previously loaded rows and the `Showing … cases` footer remain visible.
 - The blocking `The service could not retrieve this page.` error state is not displayed.
 - Selecting Retry successfully refreshes the page and restores `Cached pages enabled by TanStack Query`.
 
@@ -851,14 +852,14 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 **Steps:**
 1. Load OpsGrid.
-2. Wait until rows 1-25 are visible.
+2. Wait for the table and showing footer to render.
 3. Open a second browser tab to a blank page and leave the OpsGrid tab inactive for 3 minutes.
 4. Navigate back to the OpsGrid tab.
 5. Wait 1000 ms, then view the table content.
 
 **Expected outcome:**
 - Case data is still visible in the table.
-- The previously loaded rows and the `Showing 1-25...` footer remain visible.
+- The previously loaded rows and the `Showing … cases` footer remain visible.
 - The blocking `The service could not retrieve this page.` error state is not displayed.
 
 **Actual outcome:**
@@ -964,7 +965,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Purpose:** Verify virtualization at the largest supported page size.
 
 **Steps:**
-1. Set Page size to 200.
+1. Set Page size to maximum.
 2. Wait for the query to finish.
 3. Scroll repeatedly from the top of the table body to the bottom and back.
 4. Open a detail drawer for a row near the bottom.

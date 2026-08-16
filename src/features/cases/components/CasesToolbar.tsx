@@ -88,7 +88,7 @@ export function CasesToolbar({
           value={params.pageSize}
           onChange={(event) => onFilterChange({ pageSize: Number(event.target.value) })}
         >
-          {[25, 50, 100, 200].map((pageSize) => (
+          {[50, 100, 200, 500].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               {pageSize}
             </option>
