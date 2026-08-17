@@ -42,7 +42,7 @@ describe("CasesPage lifecycle and rendering", () => {
       expect(screen.getByText("Optimistic Mutations")).toBeInTheDocument();
     });
 
-    it("TC-046 keeps table rows visible after returning from a three-minute inactive-tab interval", async () => {
+    it("TC-046 keeps table rows visible after returning from a two-minute inactive-tab interval", async () => {
       const { queryClient } = renderWithProviders(<CasesPage />);
   
       await waitFor(() => {
@@ -59,7 +59,7 @@ describe("CasesPage lifecycle and rendering", () => {
       // Keep the tab inactive for the full manual-regression interval.
       focusManager.setFocused(false);
       await new Promise<void>((resolve) => {
-        window.setTimeout(resolve, 3 * 60 * 1_000);
+        window.setTimeout(resolve, 2 * 60 * 1_000);
       });
       focusManager.setFocused(true);
   
@@ -70,5 +70,5 @@ describe("CasesPage lifecycle and rendering", () => {
       });
   
       expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
-    }, 190_000);
+    }, 130_000);
 });

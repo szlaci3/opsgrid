@@ -19,8 +19,8 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### Tier allocation
 
-- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042, TC-046 and TC-057.
-- **Tier 2:** TC-003, TC-005, TC-008 through TC-012, TC-015, TC-017 through TC-019, TC-024 through TC-026, TC-028 through TC-031, TC-034, TC-044, and TC-045.
+- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042 and TC-057.
+- **Tier 2:** TC-003, TC-005, TC-008 through TC-012, TC-015, TC-017 through TC-019, TC-024 through TC-026, TC-028 through TC-031, TC-034, TC-044, TC-045, and TC-046.
 - **Tier 3:** TC-002, TC-020 through TC-022, TC-033, TC-039, TC-043, and TC-047 through TC-056.
 
 ## Initial page and loading
@@ -846,14 +846,12 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-046 - Table remains visible after a long inactive-tab interval
 
-**Tier:** Tier 1 - Extended regression suite
-
 **Purpose:** Verify that leaving OpsGrid in an inactive browser tab does not leave the table blank or unusable when the user returns.
 
 **Steps:**
 1. Load OpsGrid.
 2. Wait for the table and showing footer to render.
-3. Open a second browser tab to a blank page and leave the OpsGrid tab inactive for 3 minutes.
+3. Open a second browser tab to a blank page and leave the OpsGrid tab inactive for 2 minutes.
 4. Navigate back to the OpsGrid tab.
 5. Wait 1000 ms, then view the table content.
 

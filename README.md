@@ -79,14 +79,14 @@ Run the fast Vitest suite:
 npm test
 ```
 
-Install Playwright's version-matched Chromium once, then run the browser-level TC-046 regression:
+Install Playwright's version-matched Chromium once, then run the Playwright suite:
 
 ```bash
 npx playwright install chromium
-npm run test:e2e:tc046
+npm run test:e2e
 ```
 
-TC-046 intentionally runs for just over three minutes. It opens a second browser page, delivers the
+TC-046 intentionally runs for just over two minutes. It opens a second browser page, delivers the
 same visibility transition as a manual tab switch, and uses Chromium's native frozen/active lifecycle
 transition so the inactive-page condition is deterministic across Playwright runners.
 
