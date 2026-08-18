@@ -861,7 +861,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 - The blocking `The service could not retrieve this page.` error state is not displayed.
 
 **Actual outcome:**
-- The Playwright test passed in its version-matched Chromium browser after a three-minute frozen/inactive lifecycle interval.
+- The Playwright test passed in its version-matched Chromium browser after a two-minute frozen/inactive lifecycle interval.
 - The same footer and first loaded row remained rendered after returning to the table and waiting an additional 1000 ms.
 - The blocking error state was not displayed.
 
