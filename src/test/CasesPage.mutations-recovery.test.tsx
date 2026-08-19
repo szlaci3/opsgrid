@@ -12,7 +12,7 @@ import {
 } from "./casesPageTestUtils";
 
 describe("CasesPage mutation and recovery", () => {
-    it("TC-040 and TC-041 arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", async () => {
+    it("TC-040 and TC-041 arms fail-next-fetch without immediately crashing the table, then fails on the next fetch and recovers on retry", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
   
@@ -47,7 +47,7 @@ describe("CasesPage mutation and recovery", () => {
       });
     });
 
-    it("TC-036 arms fail-next-mutation, optimistically updates status, then rolls back on failure", async () => {
+    it("TC-036 arms fail-next-mutation, optimistically updates status, then rolls back on failure", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
   
@@ -74,7 +74,7 @@ describe("CasesPage mutation and recovery", () => {
       });
     });
 
-    it("TC-035 successfully updates case status when mutation succeeds", async () => {
+    it("TC-035 successfully updates case status when mutation succeeds", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
   
@@ -92,7 +92,7 @@ describe("CasesPage mutation and recovery", () => {
       });
     });
 
-    it("TC-037 allows selecting rows and executing bulk review", async () => {
+    it("TC-037 allows selecting rows and executing bulk review", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
   
@@ -111,7 +111,7 @@ describe("CasesPage mutation and recovery", () => {
       });
     });
 
-    it("TC-038 rolls back a failed bulk review and preserves selection", async () => {
+    it("TC-038 rolls back a failed bulk review and preserves selection", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const selectedRows = [getDataRows()[0], getDataRows()[1]];
@@ -136,7 +136,7 @@ describe("CasesPage mutation and recovery", () => {
       )).toBe(true);
     });
 
-    it("TC-039 disables bulk controls while a bulk request is pending", async () => {
+    it("TC-039 disables bulk controls while a bulk request is pending", { tags: ["tier-3"], timeout: 6_000 }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Latency" }), "2500");
@@ -148,9 +148,9 @@ describe("CasesPage mutation and recovery", () => {
       expect(screen.getByRole("button", { name: "Mark reviewed" })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Clear selection" })).toBeDisabled();
       await screen.findByText("Selected cases marked as reviewed.", {}, { timeout: 4_000 });
-    }, 6_000);
+    });
 
-    it("TC-042 consumes a fetch failure once and succeeds on the following retry", async () => {
+    it("TC-042 consumes a fetch failure once and succeeds on the following retry", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("button", { name: /fail next fetch/i }));
@@ -162,7 +162,7 @@ describe("CasesPage mutation and recovery", () => {
       expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
     });
 
-    it("TC-043 applies the selected latency to a subsequent API response", async () => {
+    it("TC-043 applies the selected latency to a subsequent API response", { tags: ["tier-3"], timeout: 6_000 }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const latency = screen.getByRole("combobox", { name: "Latency" });
@@ -177,19 +177,19 @@ describe("CasesPage mutation and recovery", () => {
       await user.click(screen.getByRole("button", { name: "Prev" }));
       expect(screen.getByText("Refreshing cached records...")).toBeInTheDocument();
       await screen.findByText(/Page 1 of/, {}, { timeout: 4_000 });
-    }, 6_000);
+    });
 
-    it("TC-044 clears the cache and reloads the active page", async () => {
+    it("TC-044 clears the cache and reloads the active page", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("button", { name: "Clear cache" }));
   
       expect(screen.getByText("Cache cleared.")).toBeInTheDocument();
       await screen.findByText(showingCases);
-      expect(screen.getByText("Cached pages enabled by TanStack Query")).toBeInTheDocument();
+      expect(await screen.findByText("Cached pages enabled by TanStack Query")).toBeInTheDocument();
     });
 
-    it("TC-045 resets changed data, selection, and the open drawer", async () => {
+    it("TC-045 resets changed data, selection, and the open drawer", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       mockConfig.latencyMs = 0;
@@ -223,7 +223,7 @@ describe("CasesPage mutation and recovery", () => {
       });
     });
 
-    it("TC-056 keeps the drawer consistent during an optimistic failed update", async () => {
+    it("TC-056 keeps the drawer consistent during an optimistic failed update", { tags: ["tier-3"], timeout: 7_000 }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       mockConfig.latencyMs = 1_500;
@@ -248,9 +248,9 @@ describe("CasesPage mutation and recovery", () => {
       expect(screen.getByRole("complementary", { name: "Case details" })).toHaveTextContent(
         originalStatus === "approved" ? "Approved" : originalStatus.charAt(0).toUpperCase() + originalStatus.slice(1),
       );
-    }, 7_000);
+    });
 
-    it("TC-057 keeps cached rows visible and shows an inline retry when a background refresh fails with cached data present", async () => {
+    it("TC-057 keeps cached rows visible and shows an inline retry when a background refresh fails with cached data present", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = renderWithProviders(<CasesPage />);
   

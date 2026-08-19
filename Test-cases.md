@@ -6,6 +6,8 @@
 - Create new cases with **Status: Not executed**. Update them to Passed, Failed, or Blocked only after execution.
 - Use the headed browser for visual, keyboard, and timing-sensitive cases. Add permanent Vitest and RTL coverage where the behavior can be reliably automated.
 - When an automated test only needs to confirm that the table has rendered, match the footer as `Showing .* cases`. This accommodates empty, partial, and full-page result sets. Because the initial render also shows `Showing 0 cases`, pair the matcher with a row or query-data assertion when loaded records are required. Assert an exact range only when that range is the behavior under test, such as TC-051's maximum-page-size coverage.
+- Give every automated test exactly one tier tag. Vitest uses `tier-1`, `tier-2`, or `tier-3`; Playwright uses the corresponding `@tier-1`, `@tier-2`, or `@tier-3` tag.
+- Run a tagged Vitest tier with `npm run test:tier1`, `npm run test:tier2`, or `npm run test:tier3`. Run the corresponding Playwright tier with `npm run test:e2e:tier1`, `npm run test:e2e:tier2`, or `npm run test:e2e:tier3`. These commands select tests by metadata rather than by test-case text.
 
 ## Tiered testing strategy
 
@@ -13,15 +15,9 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 | Tier | Execution | Purpose |
 | --- | --- | --- |
-| Tier 1 | Every commit and pull request | Fast Vitest and RTL validation of high-risk behavior. |
-| Tier 2 | CI builds and merges to the main branch | Broader Playwright and integration workflows. |
-| Tier 3 | Scheduled weekly and available for manual execution | Extended regression scenarios with long waits, special setup, or cross-feature risk. |
-
-### Tier allocation
-
-- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042, TC-057, TC-058.
-- **Tier 2:** TC-003, TC-005, TC-008 through TC-012, TC-015, TC-017 through TC-019, TC-024 through TC-026, TC-028 through TC-031, TC-034, TC-044, TC-045, and TC-046.
-- **Tier 3:** TC-002, TC-020 through TC-022, TC-033, TC-039, TC-043, and TC-047 through TC-056.
+| Tier 1 | Every commit and pull request | Fast automated validation of high-risk behavior, including focused browser regressions where required. |
+| Tier 2 | CI builds and merges to the main branch | Broader Playwright and integration workflows, extended regression scenarios with long waits. |
+| Tier 3 | Scheduled weekly and available for manual execution | Special setup, or cross-feature risk. |
 
 ## Initial page and loading
 
@@ -768,8 +764,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-057 - Failed background refresh preserves cached rows
 
-**Tier:** Tier 1 - Vitest and React Testing Library
-
 **Purpose:** Verify that a failed refetch of the active query is treated as a non-blocking refresh error when a previously successful result remains available.
 
 **Preconditions:** The initial page of cases has loaded successfully. In the automated test, use the active `QueryClient` to invalidate the `cases` query without changing page, search, filters, or sorting.
@@ -895,8 +889,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-047 - Narrow mobile viewport layout
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Verify that the primary page remains usable on a narrow mobile viewport.
 
 **Preconditions:** Set the browser viewport to 320 x 568 CSS pixels.
@@ -917,8 +909,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-048 - Mobile table interaction
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Verify that a narrow viewport does not prevent table actions.
 
 **Preconditions:** Set the browser viewport to 375 x 667 CSS pixels.
@@ -938,8 +928,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Status:** Not executed
 
 ### TC-049 - Mobile detail-drawer usability
-
-**Tier:** Tier 3 - Extended regression suite
 
 **Purpose:** Verify that the detail drawer is readable and dismissible on mobile.
 
@@ -962,8 +950,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-050 - Resize after data and virtual rows are rendered
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Detect layout or virtualization corruption during responsive viewport changes.
 
 **Steps:**
@@ -984,8 +970,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-051 - Virtualized scrolling with the maximum page size
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Verify virtualization at the largest supported page size.
 
 **Steps:**
@@ -1005,8 +989,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-052 - Rapid page changes under high latency
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Verify that delayed page responses cannot overwrite the final navigation choice.
 
 **Steps:**
@@ -1023,8 +1005,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Status:** Not executed
 
 ### TC-053 - Rapid filter changes under high latency
-
-**Tier:** Tier 3 - Extended regression suite
 
 **Purpose:** Verify stale-request protection across filter changes.
 
@@ -1043,8 +1023,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Status:** Not executed
 
 ### TC-054 - Consecutive updates to the same case
-
-**Tier:** Tier 3 - Extended regression suite
 
 **Purpose:** Verify that multiple in-flight updates to one row resolve to the user's latest successful choice.
 
@@ -1065,8 +1043,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### TC-055 - Reset data while a mutation is in progress
 
-**Tier:** Tier 3 - Extended regression suite
-
 **Purpose:** Verify that resetting the demo dataset produces a stable baseline despite an outstanding update.
 
 **Steps:**
@@ -1086,8 +1062,6 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Status:** Not executed
 
 ### TC-056 - Open detail drawer during a failed update to the same row
-
-**Tier:** Tier 3 - Extended regression suite
 
 **Purpose:** Verify cross-component consistency during an optimistic update and rollback.
 

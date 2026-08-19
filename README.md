@@ -79,11 +79,29 @@ Run the fast Vitest suite:
 npm test
 ```
 
+Run one complete tagged Vitest tier:
+
+```bash
+npm run test:tier1
+npm run test:tier2
+npm run test:tier3
+```
+
+Each automated test carries exactly one tier tag, so these commands remain stable as tests are added.
+
 Install Playwright's version-matched Chromium once, then run the Playwright suite:
 
 ```bash
 npx playwright install chromium
 npm run test:e2e
+```
+
+Run one complete tagged Playwright tier:
+
+```bash
+npm run test:e2e:tier1
+npm run test:e2e:tier2
+npm run test:e2e:tier3
 ```
 
 TC-046 intentionally runs for just over two minutes. It opens a second browser page, delivers the

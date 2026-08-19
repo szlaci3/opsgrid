@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const QUERY_STALE_INTERVAL_MS = 30_000;
 
-test("TC-058 recovers after Chromium restarts the mock service worker", async ({
+test("TC-058 recovers after Chromium restarts the mock service worker", { tag: "@tier-1" }, async ({
   browserName,
   page,
 }) => {

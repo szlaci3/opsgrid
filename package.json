@@ -9,7 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:tier1": "vitest run --tagsFilter tier-1",
+    "test:tier2": "vitest run --tagsFilter tier-2",
+    "test:tier3": "vitest run --tagsFilter tier-3",
     "test:e2e": "playwright test",
+    "test:e2e:tier1": "playwright test --grep @tier-1",
+    "test:e2e:tier2": "playwright test --grep @tier-2",
+    "test:e2e:tier3": "playwright test --grep @tier-3",
     "test:e2e:list": "playwright test --list"
   },
   "dependencies": {

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const INACTIVE_INTERVAL_MS = 2 * 60 * 1_000;
 
-test("TC-046 keeps table rows visible after a two-minute inactive-tab interval", async ({ page }) => {
+test("TC-046 keeps table rows visible after a two-minute inactive-tab interval", { tag: "@tier-2" }, async ({ page }) => {
   test.setTimeout(INACTIVE_INTERVAL_MS + 30_000);
 
   await page.goto("/");

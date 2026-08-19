@@ -6,7 +6,7 @@ import { renderWithProviders } from "./testUtils";
 import { renderLoaded, showingCases } from "./casesPageTestUtils";
 
 describe("CasesPage lifecycle and rendering", () => {
-    it("TC-001 renders the table and loads cases from MSW", async () => {
+    it("TC-001 renders the table and loads cases from MSW", { tags: ["tier-1"] }, async () => {
       renderWithProviders(<CasesPage />);
   
       expect(screen.getByRole("heading", { name: "OpsGrid" })).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe("CasesPage lifecycle and rendering", () => {
       });
     });
 
-    it("TC-002 shows an in-table skeleton during a slow initial query", async () => {
+    it("TC-002 shows an in-table skeleton during a slow initial query", { tags: ["tier-3"], timeout: 5_000 }, async () => {
       mockConfig.latencyMs = 2_500;
       renderWithProviders(<CasesPage />);
   
@@ -26,9 +26,9 @@ describe("CasesPage lifecycle and rendering", () => {
   
       await screen.findByText(showingCases, {}, { timeout: 4_000 });
       await screen.findAllByRole("checkbox", { name: /^Select CASE-/ }, { timeout: 4_000 });
-    }, 5_000);
+    });
 
-    it("TC-003 renders the documented page information architecture", async () => {
+    it("TC-003 renders the documented page information architecture", { tags: ["tier-2"] }, async () => {
       await renderLoaded();
   
       expect(screen.getByText("Regulatory Operations Table System")).toBeInTheDocument();

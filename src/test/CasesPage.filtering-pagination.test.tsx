@@ -14,7 +14,7 @@ import {
 } from "./casesPageTestUtils";
 
 describe("CasesPage filtering and pagination", () => {
-    it("TC-004 debounces search input and replaces the unfiltered result set", async () => {
+    it("TC-004 debounces search input and replaces the unfiltered result set", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
 
@@ -37,7 +37,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getAllByText("Liquidity Coverage Report").length).toBeGreaterThan(0);
     });
 
-    it("TC-005 searches case-insensitively across every supported API field", async () => {
+    it("TC-005 searches case-insensitively across every supported API field", { tags: ["tier-2"], timeout: 20_000 }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       const sourceCases = getCases();
@@ -62,9 +62,9 @@ describe("CasesPage filtering and pagination", () => {
         expect(data.total).toBeGreaterThan(0);
         expect(data.page).toBe(1);
       }
-    }, 10_000);
+    });
 
-    it("TC-006 shows the empty state and recovers with Reset filters", async () => {
+    it("TC-006 shows the empty state and recovers with Reset filters", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const search = screen.getByRole("searchbox", { name: "Search" });
@@ -78,7 +78,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(search).toHaveValue("");
     });
 
-    it("TC-007 filters rows by status and resets to page 1", async () => {
+    it("TC-007 filters rows by status and resets to page 1", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Status" }), "approved");
@@ -89,7 +89,7 @@ describe("CasesPage filtering and pagination", () => {
       getDataRows().forEach((row) => expect(row).toHaveTextContent("Approved"));
     });
 
-    it("TC-008 filters visible rows by risk level", async () => {
+    it("TC-008 filters visible rows by risk level", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
 
@@ -111,7 +111,7 @@ describe("CasesPage filtering and pagination", () => {
       dataRows.forEach((row) => expect(row).toHaveTextContent("Critical"));
     });
 
-    it("TC-009 filters rows by jurisdiction", async () => {
+    it("TC-009 filters rows by jurisdiction", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Jurisdiction" }), "Belgium");
@@ -121,7 +121,7 @@ describe("CasesPage filtering and pagination", () => {
       getDataRows().forEach((row) => expect(row).toHaveTextContent("Belgium"));
     });
 
-    it("TC-010 combines search and all filters", async () => {
+    it("TC-010 combines search and all filters", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       const matchingCase = getCases()[0];
@@ -153,7 +153,7 @@ describe("CasesPage filtering and pagination", () => {
       )).toBe(true);
     });
 
-    it("TC-011 resets every toolbar control, page, and selection", async () => {
+    it("TC-011 resets every toolbar control, page, and selection", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.type(screen.getByRole("searchbox", { name: "Search" }), "liquidity");
@@ -175,7 +175,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
-    it("TC-012 changes page size and clears existing selection", async () => {
+    it("TC-012 changes page size and clears existing selection", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.click(screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0]);
@@ -187,7 +187,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
-    it("resets search and filters to the initial page", async () => {
+    it("resets search and filters to the initial page", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
   
@@ -209,7 +209,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(riskFilter).toHaveValue("all");
     });
 
-    it("TC-013 uses ascending deadline sorting by default", async () => {
+    it("TC-013 uses ascending deadline sorting by default", { tags: ["tier-1"] }, async () => {
       const { queryClient } = await renderLoaded();
       const deadlineHeader = screen.getByRole("columnheader", { name: /Deadline/ });
       expect(deadlineHeader).toHaveAttribute("aria-sort", "ascending");
@@ -223,7 +223,7 @@ describe("CasesPage filtering and pagination", () => {
       )).toBe(true);
     });
 
-    it("TC-014 toggles a sortable header between ascending and descending", async () => {
+    it("TC-014 toggles a sortable header between ascending and descending", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       const institutionHeader = screen.getByRole("columnheader", { name: /Institution/ });
@@ -242,7 +242,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(institutionHeader).toHaveAttribute("aria-sort", "descending");
     });
 
-    it("TC-015 resets pagination and selection when sorting changes", async () => {
+    it("TC-015 resets pagination and selection when sorting changes", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.click(screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0]);
@@ -256,7 +256,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(getSelectionCount(0)).toBeInTheDocument();
     });
 
-    it("TC-016 navigates to the next page and back while preserving filters", async () => {
+    it("TC-016 navigates to the next page and back while preserving filters", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Risk" }), "critical");
@@ -270,7 +270,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getByRole("combobox", { name: "Risk" })).toHaveValue("critical");
     });
 
-    it("TC-017 navigates to the first and last available pages", async () => {
+    it("TC-017 navigates to the first and last available pages", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       const initialData = await waitForCasesQuery(queryClient, (params) => params.page === 1);
@@ -283,7 +283,7 @@ describe("CasesPage filtering and pagination", () => {
       await screen.findByText(new RegExp(`Page 1 of ${initialData.totalPages}`));
     });
 
-    it("TC-018 disables pagination controls at both boundaries", async () => {
+    it("TC-018 disables pagination controls at both boundaries", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       const initialData = await waitForCasesQuery(queryClient, (params) => params.page === 1);
@@ -298,7 +298,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getByRole("button", { name: "Last" })).toBeDisabled();
     });
 
-    it("TC-019 bases filtered pagination on the filtered total", async () => {
+    it("TC-019 bases filtered pagination on the filtered total", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Status" }), "draft");
@@ -310,7 +310,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getByText(new RegExp(`of ${data.total.toLocaleString()} cases`))).toBeInTheDocument();
     });
 
-    it("TC-020 returns to a cached page without showing unrelated data", async () => {
+    it("TC-020 returns to a cached page without showing unrelated data", { tags: ["tier-3"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("button", { name: "Next" }));
@@ -323,7 +323,7 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.queryByLabelText("Loading records")).not.toBeInTheDocument();
     });
 
-    it("TC-021 keeps previous rows visible and announces a page refresh", async () => {
+    it("TC-021 keeps previous rows visible and announces a page refresh", { tags: ["tier-3"], timeout: 5_000 }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Latency" }), "1500");
@@ -333,9 +333,9 @@ describe("CasesPage filtering and pagination", () => {
       expect(screen.getByText("Refreshing cached records...")).toBeInTheDocument();
       expect(screen.queryByText("No cases match the current filters.")).not.toBeInTheDocument();
       await screen.findByText(/Page 2 of/, {}, { timeout: 3_000 });
-    }, 5_000);
+    });
 
-    it("TC-022 shows only the final search result after rapid delayed searches", async () => {
+    it("TC-022 shows only the final search result after rapid delayed searches", { tags: ["tier-3"], timeout: 8_000 }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       await user.selectOptions(screen.getByRole("combobox", { name: "Latency" }), "1500");
@@ -359,9 +359,9 @@ describe("CasesPage filtering and pagination", () => {
           item.assignedReviewer ?? "", item.description]
           .some((value) => value.toLowerCase().includes("northbridge")),
       )).toBe(true);
-    }, 8_000);
+    });
 
-    it("TC-052 keeps the final page choice after rapid delayed navigation", async () => {
+    it("TC-052 keeps the final page choice after rapid delayed navigation", { tags: ["tier-3"], timeout: 10_000 }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       mockConfig.latencyMs = 1_500;
@@ -372,9 +372,9 @@ describe("CasesPage filtering and pagination", () => {
       const data = await waitForCasesQuery(queryClient, (params) => params.page === 2, 8_000);
       expect(data.page).toBe(2);
       expect(screen.getByText(showingCases)).toBeInTheDocument();
-    }, 10_000);
+    });
 
-    it("TC-053 keeps only the final filter combination after rapid delayed changes", async () => {
+    it("TC-053 keeps only the final filter combination after rapid delayed changes", { tags: ["tier-3"], timeout: 10_000 }, async () => {
       const user = userEvent.setup();
       const { queryClient } = await renderLoaded();
       mockConfig.latencyMs = 1_500;
@@ -403,5 +403,5 @@ describe("CasesPage filtering and pagination", () => {
         item.riskLevel === target.riskLevel &&
         item.jurisdiction === target.jurisdiction,
       )).toBe(true);
-    }, 10_000);
+    });
 });

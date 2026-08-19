@@ -12,7 +12,7 @@ import {
 } from "./casesPageTestUtils";
 
 describe("CasesPage table interactions", () => {
-    it("TC-031 opens and closes a case detail drawer with the close button", async () => {
+    it("TC-031 opens and closes a case detail drawer with the close button", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       renderWithProviders(<CasesPage />);
 
@@ -32,7 +32,7 @@ describe("CasesPage table interactions", () => {
       });
     });
 
-    it("TC-023 selects and clears an individual row", async () => {
+    it("TC-023 selects and clears an individual row", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const checkbox = screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0];
@@ -53,7 +53,7 @@ describe("CasesPage table interactions", () => {
       )).toBe(true);
     });
 
-    it("TC-024 selects only the rows on the current page", async () => {
+    it("TC-024 selects only the rows on the current page", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getByRole("checkbox", { name: "Select all cases on this page" }));
@@ -70,7 +70,7 @@ describe("CasesPage table interactions", () => {
       )).toBe(true);
     });
 
-    it("TC-025 marks the header checkbox indeterminate for partial selection", async () => {
+    it("TC-025 marks the header checkbox indeterminate for partial selection", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0]);
@@ -84,7 +84,7 @@ describe("CasesPage table interactions", () => {
       )).toBe(true);
     });
 
-    it("TC-026 clears all selected rows with the bulk action", async () => {
+    it("TC-026 clears all selected rows with the bulk action", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const rowCheckboxes = screen.getAllByRole("checkbox", { name: /^Select CASE-/ });
@@ -98,7 +98,7 @@ describe("CasesPage table interactions", () => {
       )).toBe(true);
     });
 
-    it("TC-027 opens the drawer from a non-interactive row area", async () => {
+    it("TC-027 opens the drawer from a non-interactive row area", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const row = getDataRows()[0];
@@ -112,7 +112,7 @@ describe("CasesPage table interactions", () => {
       );
     });
 
-    it("TC-028 opens the matching drawer from View details", async () => {
+    it("TC-028 opens the matching drawer from View details", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const row = getDataRows()[0];
@@ -126,7 +126,7 @@ describe("CasesPage table interactions", () => {
       expect(rowText).toContain(screen.getByRole("heading", { level: 2 }).textContent ?? "");
     });
 
-    it("TC-029 keeps selection and status controls from opening the drawer", async () => {
+    it("TC-029 keeps selection and status controls from opening the drawer", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const rowCheckbox = screen.getAllByRole("checkbox", { name: /^Select CASE-/ })[0];
@@ -139,7 +139,7 @@ describe("CasesPage table interactions", () => {
       expect(screen.queryByRole("complementary", { name: "Case details" })).not.toBeInTheDocument();
     });
 
-    it("TC-030 renders the drawer's operational and technical metadata", async () => {
+    it("TC-030 renders the drawer's operational and technical metadata", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getAllByRole("button", { name: /view details for/i })[0]);
@@ -154,7 +154,7 @@ describe("CasesPage table interactions", () => {
       expect(within(drawer).getByText(/optimistic and roll back/)).toBeInTheDocument();
     });
 
-    it("TC-032 closes the detail drawer with Escape", async () => {
+    it("TC-032 closes the detail drawer with Escape", { tags: ["tier-1"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getAllByRole("button", { name: /view details for/i })[0]);
@@ -165,7 +165,7 @@ describe("CasesPage table interactions", () => {
       });
     });
 
-    it("TC-033 closes the detail drawer when the backdrop is clicked", async () => {
+    it("TC-033 closes the detail drawer when the backdrop is clicked", { tags: ["tier-3"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       await user.click(screen.getAllByRole("button", { name: /view details for/i })[0]);
@@ -175,7 +175,7 @@ describe("CasesPage table interactions", () => {
       expect(screen.queryByRole("complementary", { name: "Case details" })).not.toBeInTheDocument();
     });
 
-    it("TC-034 opens a focused row with Enter and Space", async () => {
+    it("TC-034 opens a focused row with Enter and Space", { tags: ["tier-2"] }, async () => {
       const user = userEvent.setup();
       await renderLoaded();
       const rows = getDataRows();
