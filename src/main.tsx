@@ -5,11 +5,12 @@ import App from "./App";
 import "./styles/globals.css";
 
 async function enableMocking() {
-  const { worker } = await import("./mocks/browser");
+  const { installMockWorkerFocusRecovery, worker } = await import("./mocks/browser");
 
-  return worker.start({
+  await worker.start({
     onUnhandledRequest: "bypass",
   });
+  installMockWorkerFocusRecovery();
 }
 
 enableMocking().then(() => {

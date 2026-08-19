@@ -33,7 +33,7 @@ test("TC-046 keeps table rows visible after a two-minute inactive-tab interval",
       configurable: true,
       value: "hidden",
     });
-    document.dispatchEvent(new Event("visibilitychange"));
+    window.dispatchEvent(new Event("visibilitychange"));
   });
 
   // Chromium's native frozen lifecycle adds deterministic timer/renderer
@@ -52,7 +52,7 @@ test("TC-046 keeps table rows visible after a two-minute inactive-tab interval",
       configurable: true,
       value: "visible",
     });
-    document.dispatchEvent(new Event("visibilitychange"));
+    window.dispatchEvent(new Event("visibilitychange"));
   });
   await expect
     .poll(() => page.evaluate(() => document.visibilityState))
@@ -63,6 +63,7 @@ test("TC-046 keeps table rows visible after a two-minute inactive-tab interval",
   await expect(footer).toHaveText(loadedFooter ?? "");
   await expect(rows.nth(1)).toHaveText(firstLoadedRow ?? "");
   await expect.poll(() => rows.count()).toBeGreaterThan(1);
+  await expect(page.getByText("Refresh failed. Showing cached records.")).toHaveCount(0);
   await expect(page.getByText("The service could not retrieve this page.")).toHaveCount(0);
 
   await inactiveTab.close();

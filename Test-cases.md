@@ -19,7 +19,7 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 
 ### Tier allocation
 
-- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042 and TC-057.
+- **Tier 1:** TC-001, TC-004, TC-006, TC-007, TC-013, TC-014, TC-016, TC-023, TC-027, TC-032, TC-035 through TC-038, TC-040 through TC-042, TC-057, TC-058.
 - **Tier 2:** TC-003, TC-005, TC-008 through TC-012, TC-015, TC-017 through TC-019, TC-024 through TC-026, TC-028 through TC-031, TC-034, TC-044, TC-045, and TC-046.
 - **Tier 3:** TC-002, TC-020 through TC-022, TC-033, TC-039, TC-043, and TC-047 through TC-056.
 
@@ -858,12 +858,38 @@ The tiers are based on execution cost and confidence. They are not coverage targ
 **Expected outcome:**
 - Case data is still visible in the table.
 - The previously loaded rows and the `Showing … cases` footer remain visible.
+- The inline `Refresh failed. Showing cached records.` message is not displayed.
 - The blocking `The service could not retrieve this page.` error state is not displayed.
 
 **Actual outcome:**
-- The Playwright test passed in its version-matched Chromium browser after a two-minute frozen/inactive lifecycle interval.
-- The same footer and first loaded row remained rendered after returning to the table and waiting an additional 1000 ms.
-- The blocking error state was not displayed.
+- Before the recovery fix, manual execution in a long-lived Chrome session at `http://localhost:5173/` displayed the inline refresh error after returning to OpsGrid. The original Playwright lifecycle test did not reproduce that service-worker restart condition.
+- After the recovery fix, the Playwright test passed in its version-matched Chromium browser after a two-minute frozen/inactive lifecycle interval.
+- The same footer and first loaded row remained rendered, and neither the inline nor blocking error state was displayed.
+
+**Status:** Passed
+
+### TC-058 - Mock service worker restart recovery
+
+**Purpose:** Verify that OpsGrid restores the current page as an active MSW client before a focus refetch when Chromium has terminated and restarted the mock service worker.
+
+**Preconditions:** Run in Chromium with the initial page of cases loaded successfully.
+
+**Steps:**
+1. Load OpsGrid and record the showing footer and first rendered data row.
+2. Use Chromium CDP to stop all running service workers while preserving the worker registration and loaded page.
+3. Advance the page clock beyond the query stale interval.
+4. Dispatch the visible-page lifecycle event to trigger TanStack Query's focus refetch.
+5. Wait for the refetch to settle, then select Next.
+
+**Expected outcome:**
+- OpsGrid reactivates the current page as an MSW client before starting the focus refetch.
+- The refetch returns an `application/json` response rather than passing through to the Vite HTML fallback.
+- The recorded row and showing footer remain visible without either refresh or blocking error state.
+- Next loads page 2 successfully.
+
+**Actual outcome:**
+- Before the recovery fix, the deterministic Playwright test failed with `Refresh failed. Showing cached records.` and observed a `200 text/html` response from `/api/cases`.
+- After the recovery fix, the test passed in both the desktop and mobile Playwright projects.
 
 **Status:** Passed
 

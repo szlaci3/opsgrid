@@ -1,5 +1,4 @@
 import { screen, waitFor } from "@testing-library/react";
-import { focusManager } from "@tanstack/react-query";
 import { describe, expect, it } from "vitest";
 import { CasesPage } from "../features/cases/CasesPage";
 import { mockConfig } from "../mocks/mockConfig";
@@ -42,33 +41,4 @@ describe("CasesPage lifecycle and rendering", () => {
       expect(screen.getByText("Optimistic Mutations")).toBeInTheDocument();
     });
 
-    it("TC-046 keeps table rows visible after returning from a two-minute inactive-tab interval", async () => {
-      const { queryClient } = renderWithProviders(<CasesPage />);
-  
-      await waitFor(() => {
-        expect(screen.getByText(showingCases)).toBeInTheDocument();
-        expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
-      });
-  
-      const activeCasesQuery = queryClient
-        .getQueryCache()
-        .getAll()
-        .find((query) => query.queryKey[0] === "cases");
-      expect(activeCasesQuery).toBeDefined();
-  
-      // Keep the tab inactive for the full manual-regression interval.
-      focusManager.setFocused(false);
-      await new Promise<void>((resolve) => {
-        window.setTimeout(resolve, 2 * 60 * 1_000);
-      });
-      focusManager.setFocused(true);
-  
-      await waitFor(() => {
-        expect(screen.getAllByRole("row").length).toBeGreaterThan(1);
-        expect(screen.getByText(showingCases)).toBeInTheDocument();
-        expect(activeCasesQuery!.state.dataUpdatedAt).toBeGreaterThan(Date.now() - 10_000);
-      });
-  
-      expect(screen.queryByText("The service could not retrieve this page.")).not.toBeInTheDocument();
-    }, 130_000);
 });
